@@ -45,7 +45,17 @@ struct UpdatesWidgetView: View {
             Spacer(minLength: 0)
         }
         .padding()
-        .containerBackground(.fill.tertiary, for: .widget)
+        .modifier(WidgetBackgroundModifier())
+    }
+}
+
+private struct WidgetBackgroundModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOSApplicationExtension 17.0, *) {
+            content.containerBackground(.fill.tertiary, for: .widget)
+        } else {
+            content.background(Color(.secondarySystemBackground))
+        }
     }
 }
 
