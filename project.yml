@@ -11,6 +11,8 @@ options:
 settings:
   base:
     PRODUCT_NAME: "$(TARGET_NAME)"
+    DYLIB_INSTALL_NAME_BASE: "@rpath"
+    LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks @loader_path/Frameworks"
     SWIFT_VERSION: "5.10"
     TARGETED_DEVICE_FAMILY: "1,2"
     IPHONEOS_DEPLOYMENT_TARGET: "16.0"
