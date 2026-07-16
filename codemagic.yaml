@@ -41,11 +41,15 @@ workflows:
       - name: Install xcodegen
         script: |
           set +e
+          # Stale/corrupted Cellar entry from a reused CI machine can block install
+          # ("Error: /opt/homebrew/Cellar/xcodegen/X.Y.Z is not a directory").
+          sudo rm -rf /opt/homebrew/Cellar/xcodegen 2>/dev/null || true
           brew install xcodegen > brew-install.log 2>&1
           EXIT=$?
           if [ $EXIT -ne 0 ]; then
             echo "⚠️ brew install failed (exit $EXIT), retrying after brew update..."
             cat brew-install.log
+            sudo rm -rf /opt/homebrew/Cellar/xcodegen 2>/dev/null || true
             brew update >> brew-install.log 2>&1
             brew install xcodegen >> brew-install.log 2>&1
             EXIT=$?
