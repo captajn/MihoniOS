@@ -233,11 +233,16 @@ struct LibrarySortFilterSheet: View {
     @ObservedObject var model: LibraryViewModel
     @Environment(\.dismiss) private var dismiss
 
+    private let sortModes: [LibrarySortMode] = [
+        .alphabetical, .lastRead, .lastUpdate, .unreadCount,
+        .totalChapters, .latestChapter, .chapterFetchDate, .dateAdded, .random
+    ]
+
     var body: some View {
         NavigationStack {
             List {
                 Section(String(localized: "action_sort")) {
-                    ForEach(LibrarySortMode.allCases, id: \.rawValue) { mode in
+                    ForEach(sortModes, id: \.rawValue) { mode in
                         Button {
                             if model.sortMode == mode {
                                 model.sortAscending.toggle()
@@ -259,7 +264,7 @@ struct LibrarySortFilterSheet: View {
                 }
 
                 Section(String(localized: "action_display")) {
-                    ForEach(LibraryDisplayMode.allCases, id: \.rawValue) { mode in
+                    ForEach([LibraryDisplayMode.comfortableGrid, .compactGrid, .coverOnlyGrid, .list], id: \.rawValue) { mode in
                         Button {
                             model.displayMode = mode
                         } label: {

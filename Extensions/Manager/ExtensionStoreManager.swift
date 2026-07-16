@@ -156,7 +156,9 @@ public final class ExtensionStoreManager: @unchecked Sendable {
         return manifest
     }
 
-    /// Fetch remote index JSON: `{ "extensions": [ RemoteExtensionInfo ] }`
+    /// Fetch remote index JSON — supports both formats:
+    /// 1. `{ "extensions": [RemoteExtensionInfo] }` (custom)
+    /// 2. Flat array of Keiyoushi format: `[{ name, pkg, apk, lang, code, version, nsfw, sources }]`
     public func fetchIndex(store: ExtensionStoreEntry) async throws -> [RemoteExtensionInfo] {
         guard let url = URL(string: store.indexUrl) else {
             throw ExtensionError.storeError("Invalid store URL")
@@ -165,13 +167,54 @@ public final class ExtensionStoreManager: @unchecked Sendable {
         if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
             throw ExtensionError.storeError("HTTP \(http.statusCode)")
         }
-        struct Index: Codable {
+
+        // Try custom format first: { "extensions": [...] }
+        struct CustomIndex: Codable {
             var extensions: [RemoteExtensionInfo]
         }
-        if let index = try? JSONDecoder().decode(Index.self, from: data) {
+        if let index = try? JSONDecoder().decode(CustomIndex.self, from: data) {
             return index.extensions
         }
-        // Allow bare array
+
+        // Try Keiyoushi format: flat array of { name, pkg, apk, lang, code, version, nsfw, sources }
+        struct KeiyoushiExt: Codable {
+            var name: String
+            var pkg: String
+            var apk: String
+            var lang: String
+            var code: Int
+            var version: String
+            var nsfw: Int?
+            var sources: [KeiyoushiSource]?
+        }
+        struct KeiyoushiSource: Codable {
+            var name: String
+            var lang: String
+            var id: String
+            var baseUrl: String
+        }
+
+        if let items = try? JSONDecoder().decode([KeiyoushiExt].self, from: data) {
+            var result: [RemoteExtensionInfo] = []
+            for item in items {
+                // Convert source IDs to Int64
+                for src in (item.sources ?? []) {
+                    let sourceId = Int64(src.id) ?? Int64(abs(src.id.hashValue))
+                    result.append(RemoteExtensionInfo(
+                        id: sourceId,
+                        pkg: item.pkg,
+                        name: src.name,
+                        lang: src.lang,
+                        version: item.version,
+                        nsfw: (item.nsfw ?? 0) == 1,
+                        downloadURL: "https://github.com/keiyoushi/extensions/raw/refs/heads/repo/apk/\(item.apk)"
+                    ))
+                }
+            }
+            return result
+        }
+
+        // Fallback: bare array of RemoteExtensionInfo
         return try JSONDecoder().decode([RemoteExtensionInfo].self, from: data)
     }
 

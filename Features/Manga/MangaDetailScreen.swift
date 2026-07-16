@@ -317,23 +317,24 @@ struct ScanlatorFilterSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(model.uniqueScanlators.indices, id: \.self) { index in
-                    Button {
-                        model.toggleScanlator(model.uniqueScanlators[index])
-                    } label: {
-                        HStack {
-                            Text(model.uniqueScanlators[index])
-                                .foregroundStyle(.primary)
-                            Spacer()
-                            if model.hiddenScanlators.contains(model.uniqueScanlators[index]) {
-                                Image(systemName: "eye.slash")
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                Image(systemName: "eye")
-                                    .foregroundStyle(.accent)
-                            }
+        let scanlators = model.uniqueScanlators
+        let hidden = model.hiddenScanlators
+        return NavigationStack {
+            List(scanlators.indices, id: \.self) { index in
+                let scanlator = scanlators[index]
+                Button {
+                    model.toggleScanlator(scanlator)
+                } label: {
+                    HStack {
+                        Text(scanlator)
+                            .foregroundStyle(.primary)
+                        Spacer()
+                        if hidden.contains(scanlator) {
+                            Image(systemName: "eye.slash")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Image(systemName: "eye")
+                                .foregroundStyle(.accent)
                         }
                     }
                 }
