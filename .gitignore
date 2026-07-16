@@ -38,3 +38,6 @@ Secrets.xcconfig
 *.mobileprovision
 *.p12
 GoogleService-Info.plist
+
+# Local docs
+PARITY.md
