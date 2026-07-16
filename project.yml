@@ -10,6 +10,7 @@ options:
 
 settings:
   base:
+    PRODUCT_NAME: "$(TARGET_NAME)"
     SWIFT_VERSION: "5.10"
     TARGETED_DEVICE_FAMILY: "1,2"
     IPHONEOS_DEPLOYMENT_TARGET: "16.0"
