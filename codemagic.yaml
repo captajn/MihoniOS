@@ -43,35 +43,9 @@ workflows:
           brew install xcodegen
       - name: Generate Xcode project
         script: |
-          {
-            echo "== xcodegen version =="
-            xcodegen version
-            echo "== pwd =="
-            pwd
-            echo "== ls Resources (before generate) =="
-            ls -la Resources || echo "(Resources dir missing!)"
-            echo "== xcodegen generate output =="
-            xcodegen generate --spec project.yml 2>&1
-          } > generate.log 2>&1
-          cat generate.log
+          xcodegen generate
           test -d "$XCODE_PROJECT" || { echo "❌ Missing $XCODE_PROJECT"; exit 1; }
           echo "✅ Generated $XCODE_PROJECT"
-      - name: Diagnose resources wiring
-        script: |
-          PBX="$XCODE_PROJECT/project.pbxproj"
-          {
-            echo "== pbxproj size =="
-            wc -l "$PBX"
-            echo "== grep Assets.xcassets =="
-            grep -n "Assets.xcassets" "$PBX" || echo "(none found)"
-            echo "== grep Localizable.xcstrings =="
-            grep -n "Localizable.xcstrings" "$PBX" || echo "(none found)"
-            echo "== grep MihonWidgets.entitlements (proves recent project.yml was used) =="
-            grep -n "MihonWidgets.entitlements" "$PBX" || echo "(none found)"
-            echo "== PBXResourcesBuildPhase blocks =="
-            grep -n "isa = PBXResourcesBuildPhase" -A 8 "$PBX" || echo "(none found)"
-          } > diagnose-resources.txt 2>&1
-          cat diagnose-resources.txt
       - name: Resolve Swift packages
         script: |
           xcodebuild -resolvePackageDependencies \
@@ -194,5 +168,3 @@ workflows:
       - build/Mihon.xcarchive
       - build-sim.log
       - build-archive.log
-      - diagnose-resources.txt
-      - generate.log
