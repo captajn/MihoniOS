@@ -319,7 +319,8 @@ struct ScanlatorFilterSheet: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(model.uniqueScanlators, id: \.self) { scanlator in
+                ForEach(0..<model.uniqueScanlators.count, id: \.self) { index in
+                    let scanlator = model.uniqueScanlators[index]
                     Button {
                         model.toggleScanlator(scanlator)
                     } label: {
@@ -332,7 +333,7 @@ struct ScanlatorFilterSheet: View {
                                     .foregroundStyle(.secondary)
                             } else {
                                 Image(systemName: "eye")
-                                    .foregroundColor(.accent)
+                                    .tint(.blue)
                             }
                         }
                     }

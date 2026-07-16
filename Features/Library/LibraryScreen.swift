@@ -259,7 +259,7 @@ struct LibrarySortFilterSheet: View {
                                 Spacer()
                                 if model.displayMode == mode {
                                     Image(systemName: "checkmark")
-                                        .foregroundColor(.accent)
+                                        .tint(.blue)
                                 }
                             }
                         }
@@ -276,23 +276,22 @@ struct LibrarySortFilterSheet: View {
                             Spacer()
                             if model.selectedCategoryId == -1 {
                                 Image(systemName: "checkmark")
-                                    .foregroundColor(.accent)
+                                    .tint(.blue)
                             }
                         }
                     }
-                    ForEach(model.categories, id: \.id) { cat in
-                        if !cat.isSystemCategory {
-                            Button {
-                                model.selectedCategoryId = cat.id
-                            } label: {
-                                HStack {
-                                    Text(cat.name)
-                                        .foregroundStyle(.primary)
-                                    Spacer()
-                                    if model.selectedCategoryId == cat.id {
-                                        Image(systemName: "checkmark")
-                                            .foregroundColor(.accent)
-                                    }
+                    let userCategories = model.categories.filter { !$0.isSystemCategory }
+                    ForEach(userCategories, id: \.id) { cat in
+                        Button {
+                            model.selectedCategoryId = cat.id
+                        } label: {
+                            HStack {
+                                Text(cat.name)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if model.selectedCategoryId == cat.id {
+                                    Image(systemName: "checkmark")
+                                        .tint(.blue)
                                 }
                             }
                         }
@@ -326,7 +325,7 @@ struct LibrarySortFilterSheet: View {
                 Spacer()
                 if model.sortMode == mode {
                     Image(systemName: model.sortAscending ? "arrow.up" : "arrow.down")
-                        .foregroundColor(.accent)
+                        .tint(.blue)
                 }
             }
         }
