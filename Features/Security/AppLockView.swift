@@ -20,7 +20,7 @@ struct AppLockView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
             }
-            Button(String(localized: "lock_unlock")) {
+            Button(String(localized: "pref_security")) {
                 Task { await unlock() }
             }
             .buttonStyle(.borderedProminent)
@@ -40,7 +40,7 @@ struct AppLockView: View {
         do {
             let ok = try await context.evaluatePolicy(
                 .deviceOwnerAuthentication,
-                localizedReason: String(localized: "lock_unlock")
+                localizedReason: String(localized: "pref_security")
             )
             if ok { onUnlocked() }
         } catch {

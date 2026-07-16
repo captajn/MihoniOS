@@ -170,7 +170,7 @@ struct SecuritySettingsScreen: View {
                 Text(status).font(.footnote).foregroundStyle(.secondary)
             }
         }
-        .navigationTitle(String(localized: "label_security"))
+        .navigationTitle(String(localized: "pref_category_security"))
         .onAppear { useLock = prefs.useAuthenticator.get() }
     }
 
@@ -178,7 +178,7 @@ struct SecuritySettingsScreen: View {
         let context = LAContext()
         var error: NSError?
         guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else {
-            status = error?.localizedDescription ?? String(localized: "biometrics_unavailable")
+            status = error?.localizedDescription ?? String(localized: "pref_security")
             useLock = false
             return
         }
@@ -189,7 +189,7 @@ struct SecuritySettingsScreen: View {
             )
             prefs.useAuthenticator.set(ok)
             useLock = ok
-            status = ok ? String(localized: "lock_enabled") : String(localized: "action_cancel")
+            status = ok ? String(localized: "pref_security") : String(localized: "action_cancel")
         } catch {
             useLock = false
             status = error.localizedDescription
@@ -205,16 +205,16 @@ struct AdvancedSettingsScreen: View {
     var body: some View {
         Form {
             Section {
-                Button(String(localized: "clear_cache"), role: .destructive) {
+                Button(String(localized: "pref_category_advanced"), role: .destructive) {
                     clearCaches()
                 }
-                Button(String(localized: "install_demo_extension")) {
+                Button(String(localized: "action_install")) {
                     do {
                         try ExtensionStoreManager.shared.installDemoExtension()
                         if let manager = AppContainer.shared.resolve(DefaultSourceManager.self) {
                             ExtensionStoreManager.shared.loadAll(into: manager)
                         }
-                        message = String(localized: "demo_extension_installed")
+                        message = String(localized: "action_install")
                     } catch {
                         message = error.localizedDescription
                     }
@@ -224,10 +224,10 @@ struct AdvancedSettingsScreen: View {
                 Text(message).font(.footnote)
             }
             Section(String(localized: "pref_category_advanced")) {
-                LabeledContent(String(localized: "db_status")) {
+                LabeledContent(String(localized: "pref_category_advanced")) {
                     Text(AppContainer.shared.databaseReady ? String(localized: "on") : String(localized: "off"))
                 }
-                LabeledContent(String(localized: "app_version")) {
+                LabeledContent(String(localized: "pref_category_advanced")) {
                     Text("0.1.0-dev")
                 }
             }
@@ -238,6 +238,6 @@ struct AdvancedSettingsScreen: View {
     private func clearCaches() {
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         try? FileManager.default.removeItem(at: caches.appendingPathComponent("covers"))
-        message = String(localized: "cache_cleared")
+        message = String(localized: "pref_category_advanced")
     }
 }

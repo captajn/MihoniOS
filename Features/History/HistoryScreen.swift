@@ -18,7 +18,7 @@ final class HistoryViewModel: ObservableObject {
 
     func load() async {
         guard let getHistory else {
-            errorMessage = String(localized: "Database not ready")
+            errorMessage = String(localized: "error")
             return
         }
         isLoading = true

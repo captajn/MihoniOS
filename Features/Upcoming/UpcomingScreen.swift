@@ -14,7 +14,7 @@ final class UpcomingViewModel: ObservableObject {
         defer { isLoading = false }
 
         guard let mangaRepo = AppContainer.shared.resolve(MangaRepository.self) else {
-            errorMessage = String(localized: "Database not ready")
+            errorMessage = String(localized: "error")
             return
         }
 
@@ -51,7 +51,7 @@ struct UpcomingScreen: View {
             } else if model.items.isEmpty {
                 EmptyStateView(
                     title: String(localized: "label_upcoming"),
-                    message: String(localized: "upcoming_empty_description"),
+                    message: String(localized: "label_upcoming"),
                     systemImage: "calendar"
                 )
             } else {

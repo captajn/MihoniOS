@@ -15,7 +15,7 @@ struct MigrateScreen: View {
         List {
             Section(String(localized: "label_library")) {
                 if library.isEmpty {
-                    Text(String(localized: "Empty library")).foregroundStyle(.secondary)
+                    Text(String(localized: "library_empty")).foregroundStyle(.secondary)
                 } else {
                     ForEach(library) { item in
                         Button {
@@ -39,7 +39,7 @@ struct MigrateScreen: View {
                     if isWorking {
                         ProgressView()
                     } else if candidates.isEmpty {
-                        Text(String(localized: "migration_no_candidates")).foregroundStyle(.secondary)
+                        Text(String(localized: "label_migration")).foregroundStyle(.secondary)
                     } else {
                         ForEach(Array(candidates.enumerated()), id: \.offset) { _, row in
                             Button {
@@ -122,7 +122,7 @@ struct MigrateScreen: View {
                 newManga: newManga,
                 flags: [.chapters, .categories, .tracking, .extra, .deleteOld]
             )
-            message = "\(String(localized: "migration_complete")) \(row.source)"
+            message = "\(String(localized: "label_migration")) \(row.source)"
             await loadLibrary()
             candidates = []
             self.selected = nil

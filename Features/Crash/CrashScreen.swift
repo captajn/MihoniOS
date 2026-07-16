@@ -9,7 +9,7 @@ struct CrashScreen: View {
     var body: some View {
         List {
             if let crashLog {
-                Section(String(localized: "crash_log")) {
+                Section(String(localized: "crash_screen_title")) {
                     ScrollView(.horizontal, showsIndicators: false) {
                         Text(crashLog)
                             .font(.caption.monospaced())
@@ -18,10 +18,10 @@ struct CrashScreen: View {
                 }
 
                 Section {
-                    Button(String(localized: "crash_share_log")) {
+                    Button(String(localized: "action_share")) {
                         showShareSheet = true
                     }
-                    Button(String(localized: "crash_clear_log"), role: .destructive) {
+                    Button(String(localized: "action_delete"), role: .destructive) {
                         CrashHandler.shared.clearCrashLog()
                         self.crashLog = nil
                     }
@@ -29,14 +29,14 @@ struct CrashScreen: View {
             } else {
                 Section {
                     EmptyStateView(
-                        title: String(localized: "crash_no_log"),
-                        message: String(localized: "crash_no_log_description"),
+                        title: String(localized: "crash_screen_title"),
+                        message: String(localized: "crash_screen_description"),
                         systemImage: "checkmark.shield"
                     )
                 }
             }
         }
-        .navigationTitle(String(localized: "crash_log"))
+        .navigationTitle(String(localized: "crash_screen_title"))
         .onAppear {
             crashLog = CrashHandler.shared.getCrashLog()
         }

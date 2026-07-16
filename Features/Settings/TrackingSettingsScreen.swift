@@ -9,7 +9,7 @@ struct TrackingSettingsScreen: View {
     var body: some View {
         List {
             Section {
-                Text(String(localized: "tracking_description"))
+                Text(String(localized: "label_tracker_section"))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -21,7 +21,7 @@ struct TrackingSettingsScreen: View {
                         HStack {
                             Text(tracker.name)
                             Spacer()
-                            Text(tracker.isLoggedIn ? String(localized: "logged_in") : String(localized: "not_logged_in"))
+                            Text(tracker.isLoggedIn ? String(localized: "action_login") : String(localized: "action_login"))
                                 .font(.caption)
                                 .foregroundStyle(tracker.isLoggedIn ? .green : .secondary)
                         }
@@ -51,7 +51,7 @@ struct TrackerLoginScreen: View {
             if let tracker {
                 Section(tracker.name) {
                     if tracker.isLoggedIn {
-                        Text(String(localized: "logged_in"))
+                        Text(String(localized: "action_login"))
                             .foregroundStyle(.green)
                         Button(String(localized: "action_remove"), role: .destructive) {
                             tracker.logout()
@@ -61,7 +61,7 @@ struct TrackerLoginScreen: View {
                         TextField(fieldUserLabel, text: $username)
                             .textInputAutocapitalization(.never)
                         SecureField(fieldPassLabel, text: $password)
-                        Button(String(localized: "tracker_login")) {
+                        Button(String(localized: "action_login")) {
                             Task { await login() }
                         }
                     }
@@ -70,7 +70,7 @@ struct TrackerLoginScreen: View {
                     Section { Text(message).font(.footnote) }
                 }
             } else {
-                Text(String(localized: "tracker_unknown"))
+                Text(String(localized: "label_tracker_section"))
             }
         }
         .navigationTitle(tracker?.name ?? String(localized: "pref_category_tracking"))
@@ -78,15 +78,15 @@ struct TrackerLoginScreen: View {
 
     private var fieldUserLabel: String {
         switch trackerId {
-        case 6, 8, 9: return String(localized: "tracker_server_url")
-        default: return String(localized: "tracker_username")
+        case 6, 8, 9: return String(localized: "label_tracker_section")
+        default: return String(localized: "label_tracker_section")
         }
     }
 
     private var fieldPassLabel: String {
         switch trackerId {
-        case 6, 8, 9: return String(localized: "tracker_api_key")
-        default: return String(localized: "tracker_password")
+        case 6, 8, 9: return String(localized: "label_tracker_section")
+        default: return String(localized: "label_tracker_section")
         }
     }
 
@@ -94,7 +94,7 @@ struct TrackerLoginScreen: View {
         guard let tracker else { return }
         do {
             try await tracker.login(username: username, password: password)
-            message = String(localized: "logged_in")
+            message = String(localized: "action_login")
         } catch {
             message = error.localizedDescription
         }

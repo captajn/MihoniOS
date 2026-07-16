@@ -101,7 +101,7 @@ final class LibraryViewModel: ObservableObject {
                 categories = try await getCategories.await()
             }
             guard let getLibrary else {
-                errorMessage = String(localized: "Database not ready")
+                errorMessage = String(localized: "error")
                 return
             }
             items = try await getLibrary.await()
@@ -148,8 +148,8 @@ struct LibraryScreen: View {
             } else if model.filtered.isEmpty {
                 EmptyStateView(
                     title: model.searchText.isEmpty
-                        ? String(localized: "Empty library")
-                        : String(localized: "No results"),
+                        ? String(localized: "library_empty")
+                        : String(localized: "no_results"),
                     message: model.searchText.isEmpty
                         ? String(localized: "library_empty_description")
                         : String(localized: "Try a different search."),
@@ -302,7 +302,7 @@ struct LibrarySortFilterSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(String(localized: "action_done")) {
+                    Button(String(localized: "action_apply")) {
                         dismiss()
                     }
                 }

@@ -66,7 +66,7 @@ struct BrowseScreen: View {
 
             Section(String(localized: "label_sources")) {
                 if model.sources.isEmpty {
-                    Text(String(localized: "browse_empty_sources"))
+                    Text(String(localized: "browse_empty"))
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(model.sources) { source in
@@ -139,8 +139,8 @@ struct SourceBrowseScreen: View {
                 EmptyStateView(
                     title: String(localized: "browse_empty"),
                     message: sourceId == LocalSource.idValue
-                        ? String(localized: "browse_local_hint")
-                        : String(localized: "browse_no_results"),
+                        ? String(localized: "browse_empty")
+                        : String(localized: "browse_empty"),
                     systemImage: "tray"
                 )
             } else {
@@ -235,7 +235,7 @@ struct SourceBrowseScreen: View {
             ?? AppContainer.shared.resolve(DefaultSourceManager.self),
               let source = manager.get(sourceId) as? any CatalogueSource
         else {
-            errorMessage = String(localized: "browse_source_not_found")
+            errorMessage = String(localized: "source_not_found")
             return
         }
 

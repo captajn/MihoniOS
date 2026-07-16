@@ -9,9 +9,9 @@ struct SupportScreen: View {
                     Image(systemName: "heart.fill")
                         .font(.system(size: 48))
                         .foregroundStyle(.tint)
-                    Text(String(localized: "support_us_title"))
+                    Text(String(localized: "label_support_us"))
                         .font(.title2.weight(.semibold))
-                    Text(String(localized: "support_us_description"))
+                    Text(String(localized: "label_support_us"))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
@@ -20,17 +20,17 @@ struct SupportScreen: View {
                 .frame(maxWidth: .infinity)
             }
 
-            Section(String(localized: "support_us_links")) {
+            Section(String(localized: "label_support_us")) {
                 Link(destination: URL(string: "https://github.com/mihonapp/mihon")!) {
                     Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
                 }
                 Link(destination: URL(string: "https://mihon.app")!) {
-                    Label(String(localized: "support_website"), systemImage: "globe")
+                    Label(String(localized: "label_support_us"), systemImage: "globe")
                 }
             }
 
             Section {
-                Text(String(localized: "support_us_thanks"))
+                Text(String(localized: "label_support_us"))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

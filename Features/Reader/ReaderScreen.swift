@@ -28,7 +28,7 @@ struct ReaderScreen: View {
                         .buttonStyle(.borderedProminent)
                 }
             } else if model.pages.isEmpty {
-                Text(String(localized: "reader_no_pages"))
+                Text(String(localized: "page_list_empty_error"))
                     .foregroundStyle(.white)
             } else {
                 readerContent

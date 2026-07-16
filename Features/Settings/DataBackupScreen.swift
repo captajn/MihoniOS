@@ -44,11 +44,11 @@ struct DataBackupScreen: View {
             }
 
             Section(String(localized: "label_data_storage")) {
-                Text(String(localized: "backup_downloads_path"))
+                Text(String(localized: "label_data_storage"))
                     .font(.footnote)
-                Text(String(localized: "backup_local_source_path"))
+                Text(String(localized: "label_data_storage"))
                     .font(.footnote)
-                Text(String(localized: "backup_extensions_path"))
+                Text(String(localized: "label_data_storage"))
                     .font(.footnote)
             }
 
@@ -115,7 +115,7 @@ struct DataBackupScreen: View {
             let url = dir.appendingPathComponent("mihon-\(Int(Date().timeIntervalSince1970)).tachibk")
             try data.write(to: url)
             exportURL = url
-            message = String(format: String(localized: "backup_created_format"), data.count)
+            message = String(format: String(localized: "backup_created"), data.count)
         } catch {
             message = error.localizedDescription
         }
@@ -132,7 +132,7 @@ struct DataBackupScreen: View {
             let validation = try svc.validate(data: data)
             validationText = "\(validation.mangaCount) manga, \(validation.categoryCount) categories, \(validation.missingSources.count) sources"
             try await svc.restore(data: data)
-            message = String(localized: "backup_restore_complete")
+            message = String(localized: "backup_restore_content_full")
         } catch {
             message = error.localizedDescription
         }

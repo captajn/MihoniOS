@@ -13,13 +13,13 @@ struct UpdatesFilterDialog: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 Toggle(String(localized: "action_filter_unread"), isOn: $filterUnread)
-                Toggle(String(localized: "action_read"), isOn: $filterCompleted)
+                Toggle(String(localized: "action_mark_as_read"), isOn: $filterCompleted)
             }
             .padding()
             .background(Color(.secondarySystemBackground))
             .cornerRadius(12)
 
-            Button(String(localized: "action_done")) {
+            Button(String(localized: "action_apply")) {
                 isPresented = false
             }
             .buttonStyle(.borderedProminent)

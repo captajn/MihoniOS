@@ -15,16 +15,16 @@ struct DeleteLibraryDialog: View {
                 .font(.largeTitle)
                 .foregroundStyle(.red)
 
-            Text(String(localized: "delete_from_library_title"))
+            Text(String(localized: "action_delete"))
                 .font(.headline)
 
-            Text(String(format: String(localized: "delete_from_library_message"), mangaTitle))
+            Text(String(format: String(localized: "action_delete"), mangaTitle))
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
 
             VStack(alignment: .leading, spacing: 12) {
-                Toggle(String(localized: "delete_library_entry"), isOn: $deleteManga)
+                Toggle(String(localized: "action_delete"), isOn: $deleteManga)
                     .tint(.red)
 
                 if !hasLocalManga {

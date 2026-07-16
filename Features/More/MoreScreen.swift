@@ -90,7 +90,7 @@ struct MoreScreen: View {
                 NavigationLink {
                     SecuritySettingsScreen()
                 } label: {
-                    Label(String(localized: "label_security"), systemImage: "lock")
+                    Label(String(localized: "pref_category_security"), systemImage: "lock")
                 }
                 NavigationLink {
                     AdvancedSettingsScreen()
@@ -113,7 +113,7 @@ struct MoreScreen: View {
                 NavigationLink {
                     CrashScreen()
                 } label: {
-                    Label(String(localized: "crash_log"), systemImage: "exclamationmark.triangle")
+                    Label(String(localized: "crash_screen_title"), systemImage: "exclamationmark.triangle")
                 }
             }
         }

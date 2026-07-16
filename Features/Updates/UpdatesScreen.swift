@@ -31,7 +31,7 @@ final class UpdatesViewModel: ObservableObject {
 
     func load() async {
         guard let getUpdates else {
-            errorMessage = String(localized: "Database not ready")
+            errorMessage = String(localized: "error")
             return
         }
         isLoading = true
@@ -55,7 +55,7 @@ struct UpdatesScreen: View {
             } else if model.filtered.isEmpty {
                 EmptyStateView(
                     title: String(localized: "label_recent_updates"),
-                    message: String(localized: "updates_empty_description"),
+                    message: String(localized: "label_recent_updates"),
                     systemImage: "bell"
                 )
             } else {
@@ -87,7 +87,7 @@ struct UpdatesScreen: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Toggle(String(localized: "action_filter_unread"), isOn: $model.filterUnread)
-                    Toggle(String(localized: "action_read"), isOn: $model.filterCompleted)
+                    Toggle(String(localized: "action_mark_as_read"), isOn: $model.filterCompleted)
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease.circle")
                 }

@@ -176,7 +176,7 @@ struct MangaDetailScreen: View {
                                 Label(
                                     model.chapters.contains(where: { !$0.read })
                                         ? String(localized: "action_resume")
-                                        : String(localized: "action_read"),
+                                        : String(localized: "action_mark_as_read"),
                                     systemImage: "book"
                                 )
                                 .frame(maxWidth: .infinity)
@@ -208,7 +208,7 @@ struct MangaDetailScreen: View {
 
                     Section("\(String(localized: "chapters")) (\(model.visibleChapters.count))") {
                         if model.visibleChapters.isEmpty {
-                            Text(String(localized: "manga_no_chapters"))
+                            Text(String(localized: "manga_description"))
                                 .foregroundStyle(.secondary)
                         } else {
                             ForEach(model.visibleChapters) { chapter in
@@ -264,7 +264,7 @@ struct MangaDetailScreen: View {
                 }
             } else {
                 EmptyStateView(
-                    title: String(localized: "manga_not_found"),
+                    title: String(localized: "manga_description"),
                     message: model.errorMessage ?? "ID \(mangaId)",
                     systemImage: "questionmark.folder"
                 )
@@ -343,7 +343,7 @@ struct ScanlatorFilterSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(String(localized: "action_done")) {
+                    Button(String(localized: "action_apply")) {
                         dismiss()
                     }
                 }

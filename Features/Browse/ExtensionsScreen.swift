@@ -16,7 +16,7 @@ struct ExtensionsScreen: View {
         List {
             Section(String(localized: "label_extensions")) {
                 if installed.isEmpty {
-                    Text(String(localized: "extensions_empty"))
+                    Text(String(localized: "label_extensions"))
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(installed) { ext in
@@ -28,12 +28,12 @@ struct ExtensionsScreen: View {
                         }
                     }
                 }
-                Button(String(localized: "install_demo_extension")) {
+                Button(String(localized: "action_install")) {
                     installDemo()
                 }
             }
 
-            Section(String(localized: "extension_stores")) {
+            Section(String(localized: "extensionStores")) {
                 ForEach(stores) { store in
                     VStack(alignment: .leading) {
                         Text(store.name)
@@ -50,11 +50,11 @@ struct ExtensionsScreen: View {
                         }
                     }
                 }
-                TextField(String(localized: "extension_store_name"), text: $storeName)
-                TextField(String(localized: "extension_index_url"), text: $storeURL)
+                TextField(String(localized: "extensionStores"), text: $storeName)
+                TextField(String(localized: "extensionStores"), text: $storeURL)
                     .textInputAutocapitalization(.never)
                     .keyboardType(.URL)
-                Button(String(localized: "extension_add_store")) {
+                Button(String(localized: "extensionStores")) {
                     guard !storeURL.isEmpty else { return }
                     ExtensionStoreManager.shared.addStore(
                         ExtensionStoreEntry(indexUrl: storeURL, name: storeName.isEmpty ? storeURL : storeName)
@@ -63,13 +63,13 @@ struct ExtensionsScreen: View {
                     storeName = ""
                     reload()
                 }
-                Button(String(localized: "extension_refresh")) {
+                Button(String(localized: "action_refresh")) {
                     Task { await fetchRemote() }
                 }
             }
 
             if !remote.isEmpty {
-                Section(String(localized: "extension_available")) {
+                Section(String(localized: "label_extensions")) {
                     ForEach(remote) { item in
                         VStack(alignment: .leading) {
                             Text(item.name)
@@ -88,7 +88,7 @@ struct ExtensionsScreen: View {
             }
 
             Section {
-                Text(String(localized: "extensions_description"))
+                Text(String(localized: "label_extensions"))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -127,7 +127,7 @@ struct ExtensionsScreen: View {
         do {
             try ExtensionStoreManager.shared.installDemoExtension()
             reload()
-            message = String(localized: "demo_extension_installed")
+            message = String(localized: "action_install")
         } catch {
             message = error.localizedDescription
         }
@@ -156,7 +156,7 @@ struct GlobalSearchScreen: View {
     var body: some View {
         List {
             Section {
-                TextField(String(localized: "global_search_hint"), text: $query)
+                TextField(String(localized: "action_global_search_hint"), text: $query)
                     .textInputAutocapitalization(.never)
                     .onSubmit { Task { await search() } }
                 Button(String(localized: "action_search")) { Task { await search() } }
@@ -167,9 +167,9 @@ struct GlobalSearchScreen: View {
                 ProgressView()
             }
 
-            Section(String(localized: "global_search_results")) {
+            Section(String(localized: "action_global_search")) {
                 if results.isEmpty {
-                    Text(String(localized: "No results"))
+                    Text(String(localized: "no_results"))
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(Array(results.enumerated()), id: \.offset) { _, row in

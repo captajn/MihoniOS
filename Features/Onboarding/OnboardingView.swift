@@ -15,13 +15,13 @@ struct OnboardingView: View {
                 storagePage.tag(2)
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
-            .navigationTitle(String(localized: "onboarding_welcome"))
+            .navigationTitle(String(localized: "onboarding_description"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if step < 2 {
-                        Button(String(localized: "onboarding_next")) { withAnimation { step += 1 } }
+                        Button(String(localized: "onboarding_action_next")) { withAnimation { step += 1 } }
                     } else {
-                        Button(String(localized: "onboarding_get_started")) {
+                        Button(String(localized: "onboarding_action_finish")) {
                             appState.completeOnboarding()
                         }
                         .fontWeight(.semibold)
@@ -38,7 +38,7 @@ struct OnboardingView: View {
                 .foregroundStyle(.tint)
             Text("Mihon")
                 .font(.largeTitle.weight(.bold))
-            Text(String(localized: "onboarding_welcome_description"))
+            Text(String(localized: "onboarding_description"))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)
@@ -58,7 +58,7 @@ struct OnboardingView: View {
                 .pickerStyle(.inline)
             }
             Section {
-                Text(String(localized: "onboarding_theme_hint"))
+                Text(String(localized: "onboarding_description"))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -70,9 +70,9 @@ struct OnboardingView: View {
             Image(systemName: "folder.badge.plus")
                 .font(.system(size: 56))
                 .foregroundStyle(.tint)
-            Text(String(localized: "onboarding_local_library"))
+            Text(String(localized: "onboarding_description"))
                 .font(.title2.weight(.semibold))
-            Text(String(localized: "onboarding_local_library_description"))
+            Text(String(localized: "onboarding_description"))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 24)
