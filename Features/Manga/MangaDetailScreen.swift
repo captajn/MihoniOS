@@ -332,7 +332,7 @@ struct ScanlatorFilterSheet: View {
                                     .foregroundStyle(.secondary)
                             } else {
                                 Image(systemName: "eye")
-                                    .foregroundStyle(.accent)
+                                    .foregroundStyle(.accentColor)
                             }
                         }
                     }

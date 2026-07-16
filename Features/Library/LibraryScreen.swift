@@ -248,7 +248,8 @@ struct LibrarySortFilterSheet: View {
                 }
 
                 Section(String(localized: "action_display")) {
-                    ForEach([LibraryDisplayMode.comfortableGrid, .compactGrid, .coverOnlyGrid, .list], id: \.rawValue) { mode in
+                    let displayModes: [LibraryDisplayMode] = [.comfortableGrid, .compactGrid, .coverOnlyGrid, .list]
+                    ForEach(displayModes, id: \.rawValue) { mode in
                         Button {
                             model.displayMode = mode
                         } label: {
@@ -258,7 +259,7 @@ struct LibrarySortFilterSheet: View {
                                 Spacer()
                                 if model.displayMode == mode {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(.accent)
+                                        .foregroundStyle(.accentColor)
                                 }
                             }
                         }
@@ -275,7 +276,7 @@ struct LibrarySortFilterSheet: View {
                             Spacer()
                             if model.selectedCategoryId == -1 {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(.accent)
+                                    .foregroundStyle(.accentColor)
                             }
                         }
                     }
@@ -289,7 +290,7 @@ struct LibrarySortFilterSheet: View {
                                 Spacer()
                                 if model.selectedCategoryId == cat.id {
                                     Image(systemName: "checkmark")
-                                    .foregroundStyle(.accent)
+                                    .foregroundStyle(.accentColor)
                                 }
                             }
                         }
@@ -323,7 +324,7 @@ struct LibrarySortFilterSheet: View {
                 Spacer()
                 if model.sortMode == mode {
                     Image(systemName: model.sortAscending ? "arrow.up" : "arrow.down")
-                        .foregroundStyle(.accent)
+                        .foregroundStyle(.accentColor)
                 }
             }
         }
