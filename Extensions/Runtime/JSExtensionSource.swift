@@ -89,6 +89,10 @@ public final class JSExtensionSource: CatalogueSource, @unchecked Sendable {
 
     // MARK: - JS bridge
 
+    private static func lenientlyEncode(_ urlString: String) -> String {
+        urlString.replacingOccurrences(of: "[", with: "%5B").replacingOccurrences(of: "]", with: "%5D")
+    }
+
     private func configureContext() {
         context.exceptionHandler = { _, exception in
             AppLog.error("JS exception: \(exception?.toString() ?? "?")", category: "ext")
@@ -108,7 +112,10 @@ public final class JSExtensionSource: CatalogueSource, @unchecked Sendable {
             Task {
                 defer { semaphore.signal() }
                 do {
-                    guard let url = URL(string: urlString) else {
+                    // Extension scripts often build query strings with literal `[`/`]` (e.g.
+                    // REST APIs using `order[field]=desc`), which URL(string:) rejects outright.
+                    // Fall back to percent-encoding those characters before giving up.
+                    guard let url = URL(string: urlString) ?? URL(string: Self.lenientlyEncode(urlString)) else {
                         err = "bad url"
                         return
                     }
