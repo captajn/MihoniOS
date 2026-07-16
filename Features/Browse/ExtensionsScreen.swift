@@ -92,6 +92,23 @@ struct ExtensionsScreen: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
+
+            Section("How to add sources") {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("1. Go to Browse → Extensions")
+                        .font(.footnote)
+                    Text("2. Tap 'Refresh remote index' to load available extensions")
+                        .font(.footnote)
+                    Text("3. Extensions from Keiyoushi store are listed below")
+                        .font(.footnote)
+                    Text("4. Note: APK extensions from Android are NOT supported on iOS")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    Text("5. Use Local source (Documents/local) for offline CBZ/ZIP files")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .navigationTitle(String(localized: "label_extensions"))
         .onAppear { reload() }

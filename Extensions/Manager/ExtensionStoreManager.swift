@@ -68,6 +68,13 @@ public final class ExtensionStoreManager: @unchecked Sendable {
 
     public init() {
         loadStores()
+        // Add Keiyoushi store if no stores exist
+        if stores.isEmpty {
+            addStore(ExtensionStoreEntry(
+                indexUrl: "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json",
+                name: "Keiyoushi Extensions"
+            ))
+        }
     }
 
     // MARK: Stores
