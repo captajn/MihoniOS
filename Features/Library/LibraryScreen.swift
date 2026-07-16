@@ -35,6 +35,35 @@ final class LibraryViewModel: ObservableObject {
         self.displayMode = libraryPrefs.displayMode.get()
     }
 
+    /// Effective sort mode: per-category override when `perCategorySettings` is on, else global.
+    var effectiveSortMode: LibrarySortMode {
+        selectedCategoryId >= 0 ? libraryPrefs.sortingMode(forCategory: selectedCategoryId) : sortMode
+    }
+
+    var effectiveSortAscending: Bool {
+        selectedCategoryId >= 0
+            ? libraryPrefs.sortingDirection(forCategory: selectedCategoryId) == .ascending
+            : sortAscending
+    }
+
+    func setSortMode(_ mode: LibrarySortMode) {
+        if selectedCategoryId >= 0, libraryPrefs.perCategorySettings.get() {
+            libraryPrefs.setSortingMode(mode, forCategory: selectedCategoryId)
+        } else {
+            sortMode = mode
+            libraryPrefs.sortingMode.set(mode)
+        }
+    }
+
+    func setSortAscending(_ ascending: Bool) {
+        if selectedCategoryId >= 0, libraryPrefs.perCategorySettings.get() {
+            libraryPrefs.setSortingDirection(ascending ? .ascending : .descending, forCategory: selectedCategoryId)
+        } else {
+            sortAscending = ascending
+            libraryPrefs.sortingDirection.set(ascending ? .ascending : .descending)
+        }
+    }
+
     var filtered: [LibraryManga] {
         var result = items
 
@@ -49,41 +78,44 @@ final class LibraryViewModel: ObservableObject {
             result = result.filter { $0.manga.title.localizedCaseInsensitiveContains(q) }
         }
 
+        let mode = effectiveSortMode
+        let ascending = effectiveSortAscending
+
         // Sort using sorted(by:) to avoid compiler confusion
         let sortedResult: [LibraryManga]
-        switch sortMode {
+        switch mode {
         case .alphabetical:
             sortedResult = result.sorted(by: { (a: LibraryManga, b: LibraryManga) -> Bool in
                 let cmp = a.manga.title.localizedCaseInsensitiveCompare(b.manga.title) == .orderedAscending
-                return sortAscending ? cmp : !cmp
+                return ascending ? cmp : !cmp
             })
         case .lastRead:
             sortedResult = result.sorted(by: { (a: LibraryManga, b: LibraryManga) -> Bool in
-                sortAscending ? a.lastRead < b.lastRead : a.lastRead > b.lastRead
+                ascending ? a.lastRead < b.lastRead : a.lastRead > b.lastRead
             })
         case .lastUpdate:
             sortedResult = result.sorted(by: { (a: LibraryManga, b: LibraryManga) -> Bool in
-                sortAscending ? a.manga.lastUpdate < b.manga.lastUpdate : a.manga.lastUpdate > b.manga.lastUpdate
+                ascending ? a.manga.lastUpdate < b.manga.lastUpdate : a.manga.lastUpdate > b.manga.lastUpdate
             })
         case .unreadCount:
             sortedResult = result.sorted(by: { (a: LibraryManga, b: LibraryManga) -> Bool in
-                sortAscending ? a.unreadCount < b.unreadCount : a.unreadCount > b.unreadCount
+                ascending ? a.unreadCount < b.unreadCount : a.unreadCount > b.unreadCount
             })
         case .totalChapters:
             sortedResult = result.sorted(by: { (a: LibraryManga, b: LibraryManga) -> Bool in
-                sortAscending ? a.totalChapters < b.totalChapters : a.totalChapters > b.totalChapters
+                ascending ? a.totalChapters < b.totalChapters : a.totalChapters > b.totalChapters
             })
         case .latestChapter:
             sortedResult = result.sorted(by: { (a: LibraryManga, b: LibraryManga) -> Bool in
-                sortAscending ? a.latestUpload < b.latestUpload : a.latestUpload > b.latestUpload
+                ascending ? a.latestUpload < b.latestUpload : a.latestUpload > b.latestUpload
             })
         case .chapterFetchDate:
             sortedResult = result.sorted(by: { (a: LibraryManga, b: LibraryManga) -> Bool in
-                sortAscending ? a.chapterFetchedAt < b.chapterFetchedAt : a.chapterFetchedAt > b.chapterFetchedAt
+                ascending ? a.chapterFetchedAt < b.chapterFetchedAt : a.chapterFetchedAt > b.chapterFetchedAt
             })
         case .dateAdded:
             sortedResult = result.sorted { a, b in
-                sortAscending ? a.manga.dateAdded < b.manga.dateAdded : a.manga.dateAdded > b.manga.dateAdded
+                ascending ? a.manga.dateAdded < b.manga.dateAdded : a.manga.dateAdded > b.manga.dateAdded
             }
         case .random:
             sortedResult = result.shuffled()
@@ -313,18 +345,18 @@ struct LibrarySortFilterSheet: View {
     @ViewBuilder
     private func sortRow(_ title: String, mode: LibrarySortMode) -> some View {
         Button {
-            if model.sortMode == mode {
-                model.sortAscending.toggle()
+            if model.effectiveSortMode == mode {
+                model.setSortAscending(!model.effectiveSortAscending)
             } else {
-                model.sortMode = mode
+                model.setSortMode(mode)
             }
         } label: {
             HStack {
                 Text(title)
                     .foregroundStyle(.primary)
                 Spacer()
-                if model.sortMode == mode {
-                    Image(systemName: model.sortAscending ? "arrow.up" : "arrow.down")
+                if model.effectiveSortMode == mode {
+                    Image(systemName: model.effectiveSortAscending ? "arrow.up" : "arrow.down")
                         .tint(.blue)
                 }
             }

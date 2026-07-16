@@ -174,6 +174,7 @@ public actor DownloadManager {
         isRunning = true
         defer { isRunning = false }
 
+        var completed = 0
         while let index = queue.firstIndex(where: { $0.status == .queued }) {
             queue[index].status = .downloading
             broadcast()
@@ -181,12 +182,21 @@ public actor DownloadManager {
                 try await download(at: index)
                 queue[index].status = .downloaded
                 queue[index].progress = 1
+                completed += 1
             } catch {
                 queue[index].status = .error
                 queue[index].errorMessage = error.localizedDescription
                 AppLog.error("Download failed", error: error, category: "download")
             }
             broadcast()
+        }
+
+        if completed > 0 {
+            await AppNotifications.post(
+                channel: .download,
+                title: "Mihon",
+                body: "\(completed) chapter(s) downloaded"
+            )
         }
     }
 

@@ -19,10 +19,12 @@ final class MangaDetailViewModel: ObservableObject {
     @Published var showNotes = false
     @Published var showScanlatorFilter = false
     @Published var hiddenScanlators: Set<String> = []
+    @Published var isSourceMissing = false
     private let getManga: GetManga?
     private let getChapters: GetChaptersByMangaId?
     private let toggleFavorite: ToggleMangaFavorite?
     private let chapterRepo: ChapterRepository?
+    private let sourceManager: SourceManager?
 
     var visibleChapters: [Chapter] {
         chapters.filter { !hiddenScanlators.contains($0.scanlator ?? "") }
@@ -37,13 +39,15 @@ final class MangaDetailViewModel: ObservableObject {
         getManga: GetManga? = AppContainer.shared.resolve(),
         getChapters: GetChaptersByMangaId? = AppContainer.shared.resolve(),
         toggleFavorite: ToggleMangaFavorite? = AppContainer.shared.resolve(),
-        chapterRepo: ChapterRepository? = AppContainer.shared.resolve()
+        chapterRepo: ChapterRepository? = AppContainer.shared.resolve(),
+        sourceManager: SourceManager? = AppContainer.shared.resolve()
     ) {
         self.mangaId = mangaId
         self.getManga = getManga
         self.getChapters = getChapters
         self.toggleFavorite = toggleFavorite
         self.chapterRepo = chapterRepo
+        self.sourceManager = sourceManager
     }
 
     func load() async {
@@ -53,6 +57,9 @@ final class MangaDetailViewModel: ObservableObject {
             manga = try await getManga?.await(id: mangaId)
             chapters = try await getChapters?.await(mangaId: mangaId) ?? []
             notes = manga?.notes ?? ""
+            if let source = manga?.source {
+                isSourceMissing = sourceManager?.isStub(source) ?? false
+            }
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -150,6 +157,13 @@ struct MangaDetailScreen: View {
                 LoadingView()
             } else if let manga = model.manga {
                 List {
+                    if model.isSourceMissing {
+                        Section {
+                            Label(String(localized: "source_not_installed"), systemImage: "exclamationmark.triangle.fill")
+                                .font(.footnote)
+                                .foregroundStyle(.orange)
+                        }
+                    }
                     Section {
                         HStack(alignment: .top, spacing: 16) {
                             MangaCoverView(title: manga.title, url: manga.thumbnailUrl)

@@ -11267,6 +11267,23 @@
         }
       }
     },
+    "categories_use_per_category_settings": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Per-category sort settings"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sắp xếp riêng theo từng danh mục"
+          }
+        }
+      }
+    },
     "pref_library_update_interval": {
       "extractionState": "manual",
       "localizations": {

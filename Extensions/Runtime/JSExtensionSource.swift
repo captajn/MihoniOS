@@ -241,6 +241,8 @@ public struct ExtensionManifest: Codable, Sendable {
     public var script: String
     public var supportsLatest: Bool
     public var nsfw: Bool?
+    /// Expected SHA-256 (hex) of `script` file contents, set by trusted stores for install-time verification.
+    public var sha256: String?
 
     public init(
         id: Int64,
@@ -249,7 +251,8 @@ public struct ExtensionManifest: Codable, Sendable {
         version: String = "1.0.0",
         script: String = "index.js",
         supportsLatest: Bool = true,
-        nsfw: Bool? = false
+        nsfw: Bool? = false,
+        sha256: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -258,6 +261,7 @@ public struct ExtensionManifest: Codable, Sendable {
         self.script = script
         self.supportsLatest = supportsLatest
         self.nsfw = nsfw
+        self.sha256 = sha256
     }
 }
 

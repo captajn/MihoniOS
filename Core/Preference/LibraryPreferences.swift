@@ -72,6 +72,30 @@ public final class LibraryPreferences: @unchecked Sendable {
     public var defaultCategory: Preference<Int> {
         store.getInt("default_category", default: -1)
     }
+
+    public var perCategorySettings: Preference<Bool> {
+        store.getBool("category_per_category_settings", default: false)
+    }
+
+    /// Sort mode for a specific category. Falls back to the global `sortingMode` when
+    /// per-category settings are disabled or no override exists yet.
+    public func sortingMode(forCategory categoryId: Int64) -> LibrarySortMode {
+        guard perCategorySettings.get() else { return sortingMode.get() }
+        return store.getObject("library_sorting_mode_cat_\(categoryId)", default: sortingMode.get()).get()
+    }
+
+    public func setSortingMode(_ mode: LibrarySortMode, forCategory categoryId: Int64) {
+        store.getObject("library_sorting_mode_cat_\(categoryId)", default: sortingMode.get()).set(mode)
+    }
+
+    public func sortingDirection(forCategory categoryId: Int64) -> SortDirection {
+        guard perCategorySettings.get() else { return sortingDirection.get() }
+        return store.getObject("library_sorting_dir_cat_\(categoryId)", default: sortingDirection.get()).get()
+    }
+
+    public func setSortingDirection(_ direction: SortDirection, forCategory categoryId: Int64) {
+        store.getObject("library_sorting_dir_cat_\(categoryId)", default: sortingDirection.get()).set(direction)
+    }
 }
 
 public enum LibraryDisplayMode: String, Codable, CaseIterable, Hashable, Sendable {

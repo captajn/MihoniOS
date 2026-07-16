@@ -67,6 +67,15 @@ public final class ReaderPreferences: @unchecked Sendable {
     public var doubleTapZoomWebtoon: Preference<Bool> {
         store.getBool("pref_enable_double_tap_zoom_webtoon", default: true)
     }
+
+    /// Custom in-reader brightness overlay, 0 = off (use system brightness), 1...100 = dim level.
+    public var customBrightness: Preference<Int> {
+        store.getInt("pref_custom_brightness_value_key", default: 0)
+    }
+
+    public var doublePages: Preference<Bool> {
+        store.getBool("pref_double_pages_key", default: false)
+    }
 }
 
 /// Reading modes — flag values must match Android `ReadingMode`.

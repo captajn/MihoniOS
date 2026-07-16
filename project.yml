@@ -174,6 +174,22 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         DEFINES_MODULE: YES
 
+  MihonWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.ios.widgets
+        PRODUCT_MODULE_NAME: MihonWidgets
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Mihon Widgets
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: Widgets/MihonWidgets.entitlements
+        SKIP_INSTALL: YES
+
   Mihon:
     type: application
     platform: iOS
@@ -193,15 +209,19 @@ targets:
       - target: Download
       - target: Extensions
       - target: Tracking
+      - target: MihonWidgets
+        embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: app.mihon.ios
         GENERATE_INFOPLIST_FILE: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_CFBundleDisplayName: Mihon
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_NSFaceIDUsageDescription: Unlock Mihon with Face ID
         CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: App/Mihon.entitlements
     info:
       path: App/Info.plist
       properties:

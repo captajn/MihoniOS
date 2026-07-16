@@ -1,9 +1,8 @@
 import WidgetKit
 import SwiftUI
 
-/// WidgetKit extension source (include in Widgets target when packaging).
-/// For monorepo simplicity this file is compiled into the app as a stub preview provider.
-/// Create a real Widget Extension target on Mac with XcodeGen later.
+let widgetAppGroupID = "group.app.mihon.ios"
+let widgetTitlesKey = "widget.recent.titles"
 
 struct UpdatesWidgetEntry: TimelineEntry {
     let date: Date
@@ -26,8 +25,8 @@ struct UpdatesWidgetProvider: TimelineProvider {
     }
 
     private func loadTitles() -> [String] {
-        // Shared App Group can be wired later; placeholder titles
-        UserDefaults.standard.stringArray(forKey: "widget.recent.titles") ?? ["Open Mihon for updates"]
+        UserDefaults(suiteName: widgetAppGroupID)?.stringArray(forKey: widgetTitlesKey)
+            ?? ["Open Mihon for updates"]
     }
 }
 
@@ -46,26 +45,24 @@ struct UpdatesWidgetView: View {
             Spacer(minLength: 0)
         }
         .padding()
+        .containerBackground(.fill.tertiary, for: .widget)
     }
 }
 
-// Note: @main WidgetBundle lives in a separate Widget Extension target.
-// Uncomment when creating MihonWidgets.appex:
-//
-// @main
-// struct MihonWidgets: WidgetBundle {
-//     var body: some Widget {
-//         UpdatesGridWidget()
-//     }
-// }
-//
-// struct UpdatesGridWidget: Widget {
-//     var body: some WidgetConfiguration {
-//         StaticConfiguration(kind: "UpdatesGrid", provider: UpdatesWidgetProvider()) { entry in
-//             UpdatesWidgetView(entry: entry)
-//         }
-//         .configurationDisplayName("Updates")
-//         .description("Recent library updates")
-//         .supportedFamilies([.systemSmall, .systemMedium])
-//     }
-// }
+struct UpdatesGridWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "UpdatesGrid", provider: UpdatesWidgetProvider()) { entry in
+            UpdatesWidgetView(entry: entry)
+        }
+        .configurationDisplayName("Updates")
+        .description("Recent library updates")
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+@main
+struct MihonWidgets: WidgetBundle {
+    var body: some Widget {
+        UpdatesGridWidget()
+    }
+}

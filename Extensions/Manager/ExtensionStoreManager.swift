@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 import Core
 import SourceAPI
 
@@ -149,11 +150,22 @@ public final class ExtensionStoreManager: @unchecked Sendable {
         }
     }
 
-    /// Install from a local folder (already unzipped package).
+    /// Install from a local folder (already unzipped package). Verifies `sha256` in the
+    /// manifest against the script file when the store provided one (trust check for §4-D).
     public func installLocalPackage(from sourceDir: URL) throws -> ExtensionManifest {
         let manifestURL = sourceDir.appendingPathComponent("extension.json")
         let data = try Data(contentsOf: manifestURL)
         let manifest = try JSONDecoder().decode(ExtensionManifest.self, from: data)
+
+        if let expected = manifest.sha256, !expected.isEmpty {
+            let scriptURL = sourceDir.appendingPathComponent(manifest.script)
+            let scriptData = try Data(contentsOf: scriptURL)
+            let actual = SHA256.hash(data: scriptData).map { String(format: "%02x", $0) }.joined()
+            guard actual.caseInsensitiveCompare(expected) == .orderedSame else {
+                throw ExtensionError.storeError("SHA-256 mismatch for \(manifest.name) — install aborted")
+            }
+        }
+
         let dest = extensionsRoot.appendingPathComponent(manifest.name.safeFileName, isDirectory: true)
         let fm = FileManager.default
         if fm.fileExists(atPath: dest.path) {

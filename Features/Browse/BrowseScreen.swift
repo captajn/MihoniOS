@@ -9,6 +9,7 @@ import Domain
 final class BrowseViewModel: ObservableObject {
     @Published var sources: [SourceRow] = []
     @Published var pinnedSourceIds: Set<String> = []
+    @Published var enabledLanguages: Set<String> = []
 
     struct SourceRow: Identifiable {
         let id: Int64
@@ -25,7 +26,10 @@ final class BrowseViewModel: ObservableObject {
             return
         }
         pinnedSourceIds = AppContainer.shared.sourcePreferences.pinnedSources.get()
-        sources = manager.getCatalogueSources().sorted { a, b in
+        enabledLanguages = AppContainer.shared.sourcePreferences.enabledLanguages.get()
+        sources = manager.getCatalogueSources()
+        .filter { enabledLanguages.isEmpty || enabledLanguages.contains($0.lang) || $0.id == LocalSource.idValue }
+        .sorted { a, b in
             let aPinned = pinnedSourceIds.contains(String(a.id))
             let bPinned = pinnedSourceIds.contains(String(b.id))
             if aPinned != bPinned { return aPinned }

@@ -7,8 +7,9 @@ public final class SourcePreferences: @unchecked Sendable {
         self.store = store
     }
 
+    /// Empty set = no filter (show sources of all languages). App chỉ target en/vi.
     public var enabledLanguages: Preference<Set<String>> {
-        store.getStringSet("enabled_languages", default: [Locale.current.language.languageCode?.identifier ?? "en"])
+        store.getStringSet("enabled_languages", default: ["en", "vi"])
     }
 
     public var disabledSources: Preference<Set<String>> {

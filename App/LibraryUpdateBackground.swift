@@ -1,9 +1,13 @@
 import Foundation
 import BackgroundTasks
 import UserNotifications
+import WidgetKit
 import Core
 import Domain
 import SourceAPI
+
+private let widgetAppGroupID = "group.app.mihon.ios"
+private let widgetTitlesKey = "widget.recent.titles"
 
 /// Manages background library update tasks using BGAppRefreshTask and BGProcessingTask
 public final class LibraryUpdateBackground {
@@ -56,6 +60,7 @@ public final class LibraryUpdateBackground {
             if result.newChapters > 0 {
                 await sendNotification(newChapters: result.newChapters)
             }
+            await refreshWidgetData()
 
             task.setTaskCompleted(success: success)
         } catch {
@@ -115,23 +120,22 @@ public final class LibraryUpdateBackground {
         return LibraryUpdateResult(newChapters: result.newChapters)
     }
 
+    func refreshWidgetData() async {
+        guard let mangaRepo = AppContainer.shared.resolve(MangaRepository.self) else { return }
+        let titles = (try? await mangaRepo.getLibraryManga())?
+            .sorted { $0.manga.lastUpdate > $1.manga.lastUpdate }
+            .prefix(6)
+            .map(\.manga.title) ?? []
+        UserDefaults(suiteName: widgetAppGroupID)?.set(titles, forKey: widgetTitlesKey)
+        WidgetCenter.shared.reloadAllTimelines()
+    }
+
     private func sendNotification(newChapters: Int) async {
-        let center = UNUserNotificationCenter.current()
-        let granted = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
-        guard granted else { return }
-
-        let content = UNMutableNotificationContent()
-        content.title = "Mihon"
-        content.body = "\(newChapters) new chapters available"
-        content.sound = .default
-
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
-        let request = UNNotificationRequest(
-            identifier: "library-update-\(UUID().uuidString)",
-            content: content,
-            trigger: trigger
+        await AppNotifications.post(
+            channel: .libraryUpdate,
+            title: "Mihon",
+            body: "\(newChapters) new chapters available"
         )
-        try? await center.add(request)
     }
 }
 

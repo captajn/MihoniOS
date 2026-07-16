@@ -19,6 +19,7 @@ final class ReaderViewModel: ObservableObject {
     @Published var showPageNumber: Bool
     @Published var navigationMode: Int = NavigationMode.lShaped.rawValue
     @Published var colorFilter: ReaderColorFilter = .none
+    @Published var customBrightness: Int = AppContainer.shared.readerPreferences.customBrightness.get()
     private(set) var request: ReaderOpenRequest
     private var pageCache: [Int: UIImage] = [:]
     private let progress: UpdateChapterProgress?
@@ -59,6 +60,17 @@ final class ReaderViewModel: ObservableObject {
     var pageLabel: String {
         guard pageCount > 0 else { return "—" }
         return "\(currentIndex + 1) / \(pageCount)"
+    }
+
+    func cycleColorFilter() {
+        let all = ReaderColorFilter.allCases
+        let next = (colorFilter.rawValue + 1) % all.count
+        colorFilter = ReaderColorFilter(rawValue: next) ?? .none
+    }
+
+    func setBrightness(_ value: Int) {
+        customBrightness = value
+        AppContainer.shared.readerPreferences.customBrightness.set(value)
     }
 
     var isPagerMode: Bool { readingMode.isPager }

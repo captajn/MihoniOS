@@ -13,10 +13,13 @@ struct LibrarySettingsScreen: View {
     @State private var interval: Int = 0
     @State private var badgeUnread = true
     @State private var badgeDownload = false
+    @State private var perCategorySettings = false
 
     var body: some View {
         Form {
             Section(String(localized: "action_display")) {
+                Toggle(String(localized: "categories_use_per_category_settings"), isOn: $perCategorySettings)
+                    .onChange(of: perCategorySettings) { v in prefs.perCategorySettings.set(v) }
                 Picker(String(localized: "action_display_mode"), selection: $displayMode) {
                     ForEach(LibraryDisplayMode.allCases, id: \.rawValue) {
                         Text($0.displayName).tag($0.rawValue)
@@ -52,6 +55,7 @@ struct LibrarySettingsScreen: View {
             interval = prefs.autoUpdateInterval.get()
             badgeUnread = prefs.badgeUnreadChapters.get()
             badgeDownload = prefs.badgeDownloadedChapters.get()
+            perCategorySettings = prefs.perCategorySettings.get()
         }
     }
 }

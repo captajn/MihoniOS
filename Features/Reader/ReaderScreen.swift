@@ -33,6 +33,14 @@ struct ReaderScreen: View {
             } else {
                 readerContent
                     .ignoresSafeArea()
+                    .modifier(ColorFilterModifier(filter: model.colorFilter))
+            }
+
+            if model.customBrightness > 0 {
+                Color.black
+                    .opacity(Double(model.customBrightness) / 100)
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
             }
 
             // Pager only: navigation tap zones using NavigationMode
@@ -160,6 +168,32 @@ struct ReaderScreen: View {
                     }
                     .padding(.horizontal)
                 }
+
+                Button {
+                    model.cycleColorFilter()
+                } label: {
+                    Label(model.colorFilter.displayName, systemImage: "camera.filters")
+                        .font(.caption.weight(.semibold))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.white.opacity(0.15), in: Capsule())
+                        .foregroundStyle(.white)
+                }
+
+                HStack(spacing: 8) {
+                    Image(systemName: "sun.min").foregroundStyle(.white.opacity(0.7))
+                    Slider(
+                        value: Binding(
+                            get: { Double(model.customBrightness) },
+                            set: { model.setBrightness(Int($0)) }
+                        ),
+                        in: 0...100,
+                        step: 1
+                    )
+                    .tint(.white)
+                    Image(systemName: "sun.max.fill").foregroundStyle(.white)
+                }
+                .padding(.horizontal)
             }
             .padding(.bottom, 28)
             .padding(.top, 12)
@@ -237,6 +271,25 @@ private struct WebtoonReaderView: View {
                     proxy.scrollTo(model.currentIndex, anchor: .top)
                 }
             }
+        }
+    }
+}
+
+private struct ColorFilterModifier: ViewModifier {
+    let filter: ReaderColorFilter
+
+    func body(content: Content) -> some View {
+        switch filter {
+        case .none:
+            content
+        case .sepia:
+            content
+                .saturation(0.35)
+                .colorMultiply(Color(red: 1.0, green: 0.86, blue: 0.66))
+        case .grayscale:
+            content.saturation(0)
+        case .invertColors:
+            content.colorInvert()
         }
     }
 }
