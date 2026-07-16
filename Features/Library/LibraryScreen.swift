@@ -233,34 +233,18 @@ struct LibrarySortFilterSheet: View {
     @ObservedObject var model: LibraryViewModel
     @Environment(\.dismiss) private var dismiss
 
-    private let sortModes: [LibrarySortMode] = [
-        .alphabetical, .lastRead, .lastUpdate, .unreadCount,
-        .totalChapters, .latestChapter, .chapterFetchDate, .dateAdded, .random
-    ]
-
     var body: some View {
         NavigationStack {
             List {
                 Section(String(localized: "action_sort")) {
-                    ForEach(sortModes, id: \.rawValue) { mode in
-                        Button {
-                            if model.sortMode == mode {
-                                model.sortAscending.toggle()
-                            } else {
-                                model.sortMode = mode
-                            }
-                        } label: {
-                            HStack {
-                                Text(mode.displayName)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if model.sortMode == mode {
-                                    Image(systemName: model.sortAscending ? "arrow.up" : "arrow.down")
-                                        .foregroundStyle(.accent)
-                                }
-                            }
-                        }
-                    }
+                    sortRow("Alphabetical", mode: .alphabetical)
+                    sortRow("Last read", mode: .lastRead)
+                    sortRow("Last update", mode: .lastUpdate)
+                    sortRow("Unread count", mode: .unreadCount)
+                    sortRow("Total chapters", mode: .totalChapters)
+                    sortRow("Latest chapter", mode: .latestChapter)
+                    sortRow("Date added", mode: .dateAdded)
+                    sortRow("Random", mode: .random)
                 }
 
                 Section(String(localized: "action_display")) {
@@ -319,6 +303,27 @@ struct LibrarySortFilterSheet: View {
                     Button(String(localized: "action_done")) {
                         dismiss()
                     }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func sortRow(_ title: String, mode: LibrarySortMode) -> some View {
+        Button {
+            if model.sortMode == mode {
+                model.sortAscending.toggle()
+            } else {
+                model.sortMode = mode
+            }
+        } label: {
+            HStack {
+                Text(title)
+                    .foregroundStyle(.primary)
+                Spacer()
+                if model.sortMode == mode {
+                    Image(systemName: model.sortAscending ? "arrow.up" : "arrow.down")
+                        .foregroundStyle(.accent)
                 }
             }
         }
