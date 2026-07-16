@@ -1,0 +1,220 @@
+name: Mihon
+options:
+  bundleIdPrefix: app.mihon
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    DEVELOPMENT_TEAM: ""
+    CURRENT_PROJECT_VERSION: "1"
+    MARKETING_VERSION: "0.1.0"
+
+packages:
+  GRDB:
+    url: https://github.com/groue/GRDB.swift
+    from: "7.0.0"
+
+# Layout mirrors conventional iOS modular apps (Usagi-style):
+#   App / Features / Core / Domain / Data / DesignSystem / Resources / Tests
+# Module names match folder names (Core, Domain, Data, �).
+
+targets:
+  Core:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Core
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.core
+        PRODUCT_MODULE_NAME: Core
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Domain:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Domain
+    dependencies:
+      - target: Core
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.domain
+        PRODUCT_MODULE_NAME: Domain
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  SourceAPI:
+    type: framework
+    platform: iOS
+    sources:
+      - path: SourceAPI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.sourceapi
+        PRODUCT_MODULE_NAME: SourceAPI
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Data:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Data
+    dependencies:
+      - target: Core
+      - target: Domain
+      - package: GRDB
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.data
+        PRODUCT_MODULE_NAME: Data
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  DesignSystem:
+    type: framework
+    platform: iOS
+    sources:
+      - path: DesignSystem
+    dependencies:
+      - target: Core
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.designsystem
+        PRODUCT_MODULE_NAME: DesignSystem
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Reader:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Reader
+    dependencies:
+      - target: Core
+      - target: Domain
+      - target: SourceAPI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.reader
+        PRODUCT_MODULE_NAME: Reader
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Backup:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Backup
+    dependencies:
+      - target: Core
+      - target: Domain
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.backup
+        PRODUCT_MODULE_NAME: Backup
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Download:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Download
+    dependencies:
+      - target: Core
+      - target: Domain
+      - target: SourceAPI
+      - target: Reader
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.download
+        PRODUCT_MODULE_NAME: Download
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Extensions:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Extensions
+    dependencies:
+      - target: Core
+      - target: SourceAPI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.extension
+        PRODUCT_MODULE_NAME: Extensions
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Tracking:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Tracking
+    dependencies:
+      - target: Core
+      - target: Domain
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.tracking
+        PRODUCT_MODULE_NAME: Tracking
+        GENERATE_INFOPLIST_FILE: YES
+        DEFINES_MODULE: YES
+
+  Mihon:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Features
+    resources:
+      - path: Resources
+    dependencies:
+      - target: Core
+      - target: Domain
+      - target: Data
+      - target: SourceAPI
+      - target: DesignSystem
+      - target: Reader
+      - target: Backup
+      - target: Download
+      - target: Extensions
+      - target: Tracking
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.mihon.ios
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Mihon
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_NSFaceIDUsageDescription: Unlock Mihon with Face ID
+        CODE_SIGN_STYLE: Automatic
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Mihon
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+
+schemes:
+  Mihon:
+    build:
+      targets:
+        Mihon: all
+    run:
+      config: Debug
+    archive:
+      config: Release

@@ -1,0 +1,30 @@
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+DerivedData/
+build/
+*.ipa
+*.xcarchive
+*.dSYM.zip
+*.dSYM
+
+# SPM
+.swiftpm/
+.build/
+Package.resolved
+
+# Tooling / local (không push tool lên GitHub)
+tool.py
+tool-ios.py
+tool*.py
+.last_build
+.DS_Store
+*.swp
+*~
+
+# Secrets
+Secrets.xcconfig
+*.mobileprovision
+*.p12
+GoogleService-Info.plist

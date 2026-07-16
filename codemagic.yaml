@@ -1,0 +1,176 @@
+workflows:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Mihon iOS — Preview (.app simulator) + unsigned IPA (sideload)
+  #
+  # Repo:    https://github.com/captajn/MihoniOS
+  # Layout:  App / Features / Core / Domain / Data / … (XcodeGen)
+  # Min iOS: 16.0
+  # Scheme:  Mihon
+  # Bundle:  app.mihon.ios
+  #
+  # Version source of truth: project.yml MARKETING_VERSION
+  # Override: VERSION_OVERRIDE / BUILD_OVERRIDE env when starting a build
+  # ─────────────────────────────────────────────────────────────────────────────
+  ios-build:
+    name: Mihon iOS (Preview + Sideload)
+    max_build_duration: 90
+    instance_type: mac_mini_m1
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+          source: true
+    cache:
+      cache_paths:
+        - $HOME/Library/Caches/org.swift.swiftpm
+        - $HOME/Library/Developer/Xcode/DerivedData/**/SourcePackages
+        - $HOME/Library/Caches/clang
+    environment:
+      xcode: "16.4"
+      vars:
+        XCODE_PROJECT: Mihon.xcodeproj
+        XCODE_SCHEME: Mihon
+        BUNDLE_ID: app.mihon.ios
+        APP_NAME: Mihon
+        DEFAULT_VERSION: "0.1.0"
+        BASELINE_BUILD: "1"
+        # VERSION_OVERRIDE: "0.2.0"
+        # BUILD_OVERRIDE: "10"
+    scripts:
+      - name: Install xcodegen
+        script: |
+          brew install xcodegen
+      - name: Generate Xcode project
+        script: |
+          xcodegen generate
+          test -d "$XCODE_PROJECT" || { echo "❌ Missing $XCODE_PROJECT"; exit 1; }
+          echo "✅ Generated $XCODE_PROJECT"
+      - name: Resolve Swift packages
+        script: |
+          xcodebuild -resolvePackageDependencies \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME"
+      - name: Compute version + build number
+        script: |
+          set +e
+          PROJECT_VERSION=$(grep -E '^\s+MARKETING_VERSION:' project.yml | head -1 | sed 's/.*"\([^"]*\)".*/\1/')
+          if [ -n "$PROJECT_VERSION" ]; then
+            DEFAULT_VERSION="$PROJECT_VERSION"
+            echo "📋 project.yml MARKETING_VERSION = $PROJECT_VERSION"
+          else
+            echo "⚠️  Fallback DEFAULT_VERSION=$DEFAULT_VERSION"
+          fi
+          set -e
+
+          if [ -n "$VERSION_OVERRIDE" ]; then
+            VERSION="$VERSION_OVERRIDE"
+            echo "✅ VERSION_OVERRIDE=$VERSION"
+          else
+            VERSION="$DEFAULT_VERSION"
+          fi
+
+          if [ -n "$BUILD_OVERRIDE" ]; then
+            BUILD="$BUILD_OVERRIDE"
+          else
+            TS=$(($(date +%s) % 100000))
+            if [ "$TS" -lt "$BASELINE_BUILD" ]; then
+              BUILD="$BASELINE_BUILD"
+            else
+              BUILD="$TS"
+            fi
+          fi
+
+          echo "VERSION=$VERSION" >> $CM_ENV
+          echo "BUILD=$BUILD" >> $CM_ENV
+          echo "🎯 FINAL: $VERSION+$BUILD"
+      - name: Purge stale .app artifacts
+        script: |
+          DD="$HOME/Library/Developer/Xcode/DerivedData"
+          if [ -d "$DD" ]; then
+            find "$DD" -type d -name "*.app" -prune -exec rm -rf {} + 2>/dev/null || true
+            find "$DD" -type f -name "Assets.car" -delete 2>/dev/null || true
+            echo "✅ Purged stale .app + Assets.car"
+          fi
+      - name: Download Metal Toolchain (if needed)
+        script: |
+          xcodebuild -downloadComponent MetalToolchain 2>&1 || true
+      - name: Build .app for iOS Simulator (App Preview)
+        script: |
+          set +e
+          set -o pipefail
+          xcodebuild build \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            -parallelizeTargets \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            ARCHS=arm64 \
+            EXCLUDED_ARCHS=x86_64 \
+            ONLY_ACTIVE_ARCH=YES \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            IPHONEOS_DEPLOYMENT_TARGET=16.0 \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD" \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build-sim.log
+          EXIT=${PIPESTATUS[0]}
+          if [ $EXIT -ne 0 ]; then
+            echo "=========================================="
+            echo "BUILD FAILED (exit $EXIT) — error: lines:"
+            echo "=========================================="
+            grep -nE "error:" build-sim.log | head -200 || true
+            tail -300 build-sim.log
+            exit $EXIT
+          fi
+      - name: Build unsigned archive (Sideload)
+        script: |
+          set +e
+          set -o pipefail
+          xcodebuild archive \
+            -project "$XCODE_PROJECT" \
+            -scheme "$XCODE_SCHEME" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -archivePath build/Mihon.xcarchive \
+            -parallelizeTargets \
+            -skipPackagePluginValidation \
+            -skipMacroValidation \
+            ARCHS=arm64 \
+            ONLY_ACTIVE_ARCH=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            SWIFT_COMPILATION_MODE=wholemodule \
+            IPHONEOS_DEPLOYMENT_TARGET=16.0 \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="$BUILD" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" 2>&1 | tee build-archive.log
+          EXIT=${PIPESTATUS[0]}
+          if [ $EXIT -ne 0 ]; then
+            echo "=========================================="
+            echo "ARCHIVE FAILED (exit $EXIT) — error: lines:"
+            echo "=========================================="
+            grep -nE "error:" build-archive.log | head -200 || true
+            tail -300 build-archive.log
+            exit $EXIT
+          fi
+      - name: Package unsigned IPA
+        script: |
+          mkdir -p build/Payload
+          cp -r build/Mihon.xcarchive/Products/Applications/Mihon.app build/Payload/
+          cd build
+          zip -qry mihon.ipa Payload
+          cp mihon.ipa "mihon-v${VERSION}.ipa"
+          rm -rf Payload
+          ls -lh *.ipa
+    artifacts:
+      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app
+      - build/mihon.ipa
+      - build/mihon-v*.ipa
+      - build/Mihon.xcarchive
+      - build-sim.log
+      - build-archive.log
