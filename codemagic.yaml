@@ -25,7 +25,6 @@ workflows:
     cache:
       cache_paths:
         - $HOME/Library/Caches/org.swift.swiftpm
-        - $HOME/Library/Developer/Xcode/DerivedData/**/SourcePackages
         - $HOME/Library/Caches/clang
     environment:
       xcode: "16.4"
@@ -51,7 +50,8 @@ workflows:
         script: |
           xcodebuild -resolvePackageDependencies \
             -project "$XCODE_PROJECT" \
-            -scheme "$XCODE_SCHEME"
+            -scheme "$XCODE_SCHEME" \
+            -derivedDataPath build/DerivedData
       - name: Compute version + build number
         script: |
           set +e
@@ -85,14 +85,6 @@ workflows:
           echo "VERSION=$VERSION" >> $CM_ENV
           echo "BUILD=$BUILD" >> $CM_ENV
           echo "🎯 FINAL: $VERSION+$BUILD"
-      - name: Purge stale .app artifacts
-        script: |
-          DD="$HOME/Library/Developer/Xcode/DerivedData"
-          if [ -d "$DD" ]; then
-            find "$DD" -type d -name "*.app" -prune -exec rm -rf {} + 2>/dev/null || true
-            find "$DD" -type f -name "Assets.car" -delete 2>/dev/null || true
-            echo "✅ Purged stale .app + Assets.car"
-          fi
       - name: Download Metal Toolchain (if needed)
         script: |
           xcodebuild -downloadComponent MetalToolchain 2>&1 || true
@@ -106,6 +98,7 @@ workflows:
             -sdk iphonesimulator \
             -configuration Debug \
             -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build/DerivedData \
             -parallelizeTargets \
             -skipPackagePluginValidation \
             -skipMacroValidation \
@@ -136,6 +129,7 @@ workflows:
             -configuration Release \
             -destination "generic/platform=iOS" \
             -archivePath build/Mihon.xcarchive \
+            -derivedDataPath build/DerivedData \
             -parallelizeTargets \
             -skipPackagePluginValidation \
             -skipMacroValidation \
@@ -168,7 +162,7 @@ workflows:
           rm -rf Payload
           ls -lh *.ipa
     artifacts:
-      - $HOME/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/*.app
+      - build/DerivedData/Build/Products/Debug-iphonesimulator/*.app
       - build/mihon.ipa
       - build/mihon-v*.ipa
       - build/Mihon.xcarchive
