@@ -29,8 +29,12 @@ struct ExtensionsScreen: View {
                         }
                     }
                 }
-                Button(String(localized: "action_install")) {
-                    installDemo()
+                if !installed.contains(where: { $0.name == "MangaDex" }) {
+                    Button {
+                        installMangaDex()
+                    } label: {
+                        Label("Install MangaDex", systemImage: "plus.circle")
+                    }
                 }
             }
 
@@ -136,11 +140,11 @@ struct ExtensionsScreen: View {
         }
     }
 
-    private func installDemo() {
+    private func installMangaDex() {
         do {
-            try ExtensionStoreManager.shared.installDemoExtension()
+            try ExtensionStoreManager.shared.installMangaDexExtension()
             reload()
-            message = String(localized: "action_install")
+            message = "Installed MangaDex"
         } catch {
             message = error.localizedDescription
         }

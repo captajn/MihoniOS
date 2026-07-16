@@ -284,6 +284,164 @@ public final class ExtensionStoreManager: @unchecked Sendable {
 
     /// Download zip is simplified: expects downloadURL pointing to a folder listing is not supported;
     /// for MVP, if downloadURL ends with .json package descriptor with embedded script — skip.
+    /// Install the built-in MangaDex source (JSON REST API — no HTML scraping needed, so it
+    /// actually works inside the JS sandbox, unlike Keiyoushi APK extensions). Ships in-app so
+    /// there is at least one real, working manga source out of the box with no store setup.
+    public func installMangaDexExtension() throws {
+        let dir = extensionsRoot.appendingPathComponent("MangaDex", isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+
+        let manifest = ExtensionManifest(
+            id: 9_000_002,
+            name: "MangaDex",
+            lang: "en",
+            version: "1.0.0",
+            script: "index.js",
+            supportsLatest: true
+        )
+        try JSONEncoder().encode(manifest).write(to: dir.appendingPathComponent("extension.json"))
+        try Self.mangaDexScript.write(to: dir.appendingPathComponent("index.js"), atomically: true, encoding: .utf8)
+    }
+
+    private static let mangaDexScript = """
+    var API = "https://api.mangadex.org";
+
+    function firstValue(obj) {
+      if (!obj) return "";
+      var keys = Object.keys(obj);
+      if (obj.en) return obj.en;
+      return keys.length > 0 ? obj[keys[0]] : "";
+    }
+
+    function coverUrl(item) {
+      var rel = (item.relationships || []).filter(function (r) { return r.type === "cover_art"; })[0];
+      if (!rel || !rel.attributes || !rel.attributes.fileName) return null;
+      return "https://uploads.mangadex.org/covers/" + item.id + "/" + rel.attributes.fileName + ".256.jpg";
+    }
+
+    function statusCode(s) {
+      switch (s) {
+        case "ongoing": return 1;
+        case "completed": return 2;
+        case "hiatus": return 4;
+        case "cancelled": return 5;
+        default: return 0;
+      }
+    }
+
+    function mapManga(item) {
+      var attrs = item.attributes || {};
+      var tags = (attrs.tags || []).map(function (t) {
+        return firstValue(t.attributes && t.attributes.name);
+      }).filter(Boolean).join(", ");
+      return {
+        url: item.id,
+        title: firstValue(attrs.title) || "Untitled",
+        description: firstValue(attrs.description),
+        genre: tags,
+        status: statusCode(attrs.status),
+        thumbnailUrl: coverUrl(item),
+        initialized: false
+      };
+    }
+
+    function fetchJSON(url) {
+      var res = fetch(url);
+      if (res.error) throw new Error(res.error);
+      if (res.status < 200 || res.status >= 300) throw new Error("HTTP " + res.status);
+      return JSON.parse(res.body);
+    }
+
+    function listMangas(order, page) {
+      var limit = 20;
+      var offset = (page - 1) * limit;
+      var url = API + "/manga?limit=" + limit + "&offset=" + offset + "&order[" + order + "]=desc"
+        + "&availableTranslatedLanguage[]=en&contentRating[]=safe&contentRating[]=suggestive&includes[]=cover_art";
+      var data = fetchJSON(url);
+      return {
+        mangas: (data.data || []).map(mapManga),
+        hasNextPage: offset + limit < (data.total || 0)
+      };
+    }
+
+    function getPopularManga(page) { return listMangas("followedCount", page); }
+    function getLatestUpdates(page) { return listMangas("latestUploadedChapter", page); }
+
+    function getSearchManga(page, query) {
+      var limit = 20;
+      var offset = (page - 1) * limit;
+      var url = API + "/manga?limit=" + limit + "&offset=" + offset
+        + "&title=" + encodeURIComponent(query || "")
+        + "&includes[]=cover_art";
+      var data = fetchJSON(url);
+      return {
+        mangas: (data.data || []).map(mapManga),
+        hasNextPage: offset + limit < (data.total || 0)
+      };
+    }
+
+    function getMangaUpdate(manga, fetchDetails, fetchChapters) {
+      var id = manga.url;
+      var updated = manga;
+
+      if (fetchDetails) {
+        var detail = fetchJSON(API + "/manga/" + id + "?includes[]=cover_art");
+        var item = detail.data;
+        var mapped = mapManga(item);
+        updated = {
+          url: manga.url,
+          title: mapped.title,
+          description: mapped.description,
+          genre: mapped.genre,
+          status: mapped.status,
+          thumbnailUrl: mapped.thumbnailUrl || manga.thumbnailUrl,
+          initialized: true
+        };
+      }
+
+      var chapters = [];
+      if (fetchChapters) {
+        var offset = 0;
+        var limit = 100;
+        var guard_ = 0;
+        while (guard_ < 10) {
+          var feedUrl = API + "/manga/" + id + "/feed?translatedLanguage[]=en&order[chapter]=desc"
+            + "&limit=" + limit + "&offset=" + offset;
+          var feed = fetchJSON(feedUrl);
+          var rows = feed.data || [];
+          for (var i = 0; i < rows.length; i++) {
+            var attrs = rows[i].attributes || {};
+            var group = (rows[i].relationships || []).filter(function (r) { return r.type === "scanlation_group"; })[0];
+            var num = parseFloat(attrs.chapter);
+            chapters.push({
+              url: rows[i].id,
+              name: "Chapter " + (attrs.chapter || "?") + (attrs.title ? " - " + attrs.title : ""),
+              dateUpload: attrs.publishAt ? Date.parse(attrs.publishAt) : 0,
+              chapterNumber: isNaN(num) ? -1 : num,
+              scanlator: group && group.attributes ? group.attributes.name : null
+            });
+          }
+          offset += limit;
+          guard_ += 1;
+          if (rows.length < limit || offset >= (feed.total || 0)) break;
+        }
+      }
+
+      return { manga: updated, chapters: chapters };
+    }
+
+    function getPageList(chapter) {
+      var data = fetchJSON(API + "/at-home/server/" + chapter.url);
+      var base = data.baseUrl;
+      var hash = data.chapter.hash;
+      var files = data.chapter.data || [];
+      return files.map(function (f, i) {
+        var url = base + "/data/" + hash + "/" + f;
+        return { index: i, url: url, imageUrl: url };
+      });
+    }
+    """
+
     /// Install sample built-in demo extension for testing.
     public func installDemoExtension() throws {
         let dir = extensionsRoot.appendingPathComponent("DemoSource", isDirectory: true)
