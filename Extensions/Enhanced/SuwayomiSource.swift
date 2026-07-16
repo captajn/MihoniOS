@@ -110,7 +110,7 @@ public final class SuwayomiSource: CatalogueSource, HttpSource, @unchecked Senda
     private func mapManga(_ dict: [String: Any], existingUrl: String?) -> SManga {
         let mangaId = (dict["id"] as? Int).map(String.init) ?? existingUrl ?? ""
         let thumbPath = dict["thumbnailUrl"] as? String
-        let thumbnailUrl = thumbPath.map { serverURL + "/api/v1/manga/\(mangaId)/thumbnail" } ?? nil
+        let thumbnailUrl = thumbPath.map { _ in serverURL + "/api/v1/manga/\(mangaId)/thumbnail" }
         return SManga(
             url: mangaId,
             title: dict["title"] as? String ?? "Untitled",
