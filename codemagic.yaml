@@ -50,9 +50,10 @@ workflows:
           curl -fL -o /tmp/xcodegen.zip \
             "https://github.com/yonaskolb/XcodeGen/releases/download/${XG_VERSION}/xcodegen.zip" \
             > xcodegen-install.log 2>&1
-          unzip -oq /tmp/xcodegen.zip -d /tmp/xcodegen-extracted >> xcodegen-install.log 2>&1
+          sudo rm -rf /usr/local/xcodegen
+          sudo unzip -oq /tmp/xcodegen.zip -d /usr/local >> xcodegen-install.log 2>&1
           sudo mkdir -p /usr/local/bin
-          sudo ln -sf /tmp/xcodegen-extracted/xcodegen.app/Contents/MacOS/xcodegen /usr/local/bin/xcodegen
+          sudo ln -sf /usr/local/xcodegen/bin/xcodegen /usr/local/bin/xcodegen
           export PATH="/usr/local/bin:$PATH"
           if ! which xcodegen > /dev/null 2>&1 || ! xcodegen version > /dev/null 2>&1; then
             echo "⚠️ Direct binary install failed, falling back to brew..." | tee -a xcodegen-install.log
