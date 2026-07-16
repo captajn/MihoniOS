@@ -21,7 +21,7 @@ struct TrackingSettingsScreen: View {
                         HStack {
                             Text(tracker.name)
                             Spacer()
-                            Text(tracker.isLoggedIn ? String(localized: "action_login") : String(localized: "action_login"))
+                            Text(tracker.isLoggedIn ? String(localized: "add_tracking") : String(localized: "add_tracking"))
                                 .font(.caption)
                                 .foregroundStyle(tracker.isLoggedIn ? .green : .secondary)
                         }
@@ -51,17 +51,17 @@ struct TrackerLoginScreen: View {
             if let tracker {
                 Section(tracker.name) {
                     if tracker.isLoggedIn {
-                        Text(String(localized: "action_login"))
+                        Text(String(localized: "add_tracking"))
                             .foregroundStyle(.green)
                         Button(String(localized: "action_remove"), role: .destructive) {
                             tracker.logout()
-                            message = String(localized: "logged_out")
+                            message = String(localized: "add_tracking")
                         }
                     } else {
                         TextField(fieldUserLabel, text: $username)
                             .textInputAutocapitalization(.never)
                         SecureField(fieldPassLabel, text: $password)
-                        Button(String(localized: "action_login")) {
+                        Button(String(localized: "add_tracking")) {
                             Task { await login() }
                         }
                     }
@@ -94,7 +94,7 @@ struct TrackerLoginScreen: View {
         guard let tracker else { return }
         do {
             try await tracker.login(username: username, password: password)
-            message = String(localized: "action_login")
+            message = String(localized: "add_tracking")
         } catch {
             message = error.localizedDescription
         }

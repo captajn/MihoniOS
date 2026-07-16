@@ -36,7 +36,7 @@ struct StatsScreen: View {
               let track = AppContainer.shared.resolve(TrackRepository.self),
               let history = AppContainer.shared.resolve(HistoryRepository.self)
         else {
-            error = String(localized: "error")
+            error = String(localized: "action_show_errors")
             return
         }
         do {

@@ -162,7 +162,7 @@ struct MangaDetailScreen: View {
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                 }
-                                Text(manga.favorite ? String(localized: "label_in_library") : String(localized: "not_in_library"))
+                                Text(manga.favorite ? String(localized: "in_library") : String(localized: "in_library"))
                                     .font(.caption)
                                     .foregroundStyle(manga.favorite ? .green : .secondary)
                             }
@@ -188,7 +188,7 @@ struct MangaDetailScreen: View {
                                 Task { await model.toggleLibrary() }
                             } label: {
                                 Label(
-                                    manga.favorite ? String(localized: "label_in_library") : String(localized: "action_add"),
+                                    manga.favorite ? String(localized: "in_library") : String(localized: "action_add"),
                                     systemImage: manga.favorite ? "heart.fill" : "heart"
                                 )
                                 .frame(maxWidth: .infinity)
@@ -200,7 +200,7 @@ struct MangaDetailScreen: View {
                     }
 
                     if let description = manga.description, !description.isEmpty {
-                        Section(String(localized: "manga_description")) {
+                        Section(String(localized: "action_show_manga")) {
                             Text(description)
                                 .font(.body)
                         }
@@ -208,7 +208,7 @@ struct MangaDetailScreen: View {
 
                     Section("\(String(localized: "chapters")) (\(model.visibleChapters.count))") {
                         if model.visibleChapters.isEmpty {
-                            Text(String(localized: "manga_description"))
+                            Text(String(localized: "action_show_manga"))
                                 .foregroundStyle(.secondary)
                         } else {
                             ForEach(model.visibleChapters) { chapter in
@@ -226,7 +226,7 @@ struct MangaDetailScreen: View {
                                                     .foregroundStyle(.secondary)
                                             }
                                             if chapter.lastPageRead > 0, !chapter.read {
-                                                Text("\(String(localized: "page")) \(chapter.lastPageRead + 1)")
+                                                Text("\(String(localized: "page_list_empty_error")) \(chapter.lastPageRead + 1)")
                                                     .font(.caption2)
                                                     .foregroundStyle(.tertiary)
                                             }
@@ -264,7 +264,7 @@ struct MangaDetailScreen: View {
                 }
             } else {
                 EmptyStateView(
-                    title: String(localized: "manga_description"),
+                    title: String(localized: "action_show_manga"),
                     message: model.errorMessage ?? "ID \(mangaId)",
                     systemImage: "questionmark.folder"
                 )

@@ -49,7 +49,7 @@ struct DownloadsScreen: View {
             if model.items.isEmpty {
                 EmptyStateView(
                     title: String(localized: "label_download_queue"),
-                    message: String(localized: "downloads_empty_description"),
+                    message: String(localized: "label_download_queue"),
                     systemImage: "arrow.down.circle"
                 )
             } else {

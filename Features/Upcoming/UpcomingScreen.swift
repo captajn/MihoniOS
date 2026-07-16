@@ -14,7 +14,7 @@ final class UpcomingViewModel: ObservableObject {
         defer { isLoading = false }
 
         guard let mangaRepo = AppContainer.shared.resolve(MangaRepository.self) else {
-            errorMessage = String(localized: "error")
+            errorMessage = String(localized: "action_show_errors")
             return
         }
 

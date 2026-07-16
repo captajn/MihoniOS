@@ -31,7 +31,7 @@ final class UpdatesViewModel: ObservableObject {
 
     func load() async {
         guard let getUpdates else {
-            errorMessage = String(localized: "error")
+            errorMessage = String(localized: "action_show_errors")
             return
         }
         isLoading = true

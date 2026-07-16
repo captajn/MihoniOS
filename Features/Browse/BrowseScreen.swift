@@ -66,7 +66,7 @@ struct BrowseScreen: View {
 
             Section(String(localized: "label_sources")) {
                 if model.sources.isEmpty {
-                    Text(String(localized: "browse_empty"))
+                    Text(String(localized: "empty_screen"))
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(model.sources) { source in
@@ -134,13 +134,13 @@ struct SourceBrowseScreen: View {
             if isLoading && mangas.isEmpty {
                 LoadingView()
             } else if let errorMessage {
-                EmptyStateView(title: String(localized: "Error"), message: errorMessage, systemImage: "exclamationmark.triangle")
+                EmptyStateView(title: String(localized: "action_show_errors"), message: errorMessage, systemImage: "exclamationmark.triangle")
             } else if mangas.isEmpty {
                 EmptyStateView(
-                    title: String(localized: "browse_empty"),
+                    title: String(localized: "empty_screen"),
                     message: sourceId == LocalSource.idValue
-                        ? String(localized: "browse_empty")
-                        : String(localized: "browse_empty"),
+                        ? String(localized: "empty_screen")
+                        : String(localized: "empty_screen"),
                     systemImage: "tray"
                 )
             } else {
@@ -201,7 +201,7 @@ struct SourceBrowseScreen: View {
         }
         .task { await load() }
         .refreshable { await load() }
-        .alert(String(localized: "Error"), isPresented: Binding(
+        .alert(String(localized: "action_show_errors"), isPresented: Binding(
             get: { alertError != nil },
             set: { if !$0 { alertError = nil } }
         )) {
@@ -235,7 +235,7 @@ struct SourceBrowseScreen: View {
             ?? AppContainer.shared.resolve(DefaultSourceManager.self),
               let source = manager.get(sourceId) as? any CatalogueSource
         else {
-            errorMessage = String(localized: "source_not_found")
+            errorMessage = String(localized: "local_source")
             return
         }
 

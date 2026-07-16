@@ -175,7 +175,7 @@ struct ReaderScreen: View {
         case .leftToRight: String(localized: "left_to_right_viewer")
         case .vertical: String(localized: "vertical_viewer")
         case .webtoon: String(localized: "webtoon_viewer")
-        case .continuousVertical: String(localized: "continuous_vertical_viewer")
+        case .continuousVertical: String(localized: "webtoon_viewer")
         case .default: String(localized: "label_default")
         }
     }

@@ -63,7 +63,7 @@ struct ExtensionsScreen: View {
                     storeName = ""
                     reload()
                 }
-                Button(String(localized: "action_refresh")) {
+                Button(String(localized: "action_retry")) {
                     Task { await fetchRemote() }
                 }
             }
@@ -169,7 +169,7 @@ struct GlobalSearchScreen: View {
 
             Section(String(localized: "action_global_search")) {
                 if results.isEmpty {
-                    Text(String(localized: "no_results"))
+                    Text(String(localized: "no_results_found"))
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(Array(results.enumerated()), id: \.offset) { _, row in

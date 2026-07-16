@@ -15,7 +15,7 @@ struct MigrateScreen: View {
         List {
             Section(String(localized: "label_library")) {
                 if library.isEmpty {
-                    Text(String(localized: "library_empty")).foregroundStyle(.secondary)
+                    Text(String(localized: "information_empty_library")).foregroundStyle(.secondary)
                 } else {
                     ForEach(library) { item in
                         Button {

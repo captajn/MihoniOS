@@ -81,9 +81,9 @@ struct ReaderSettingsScreen: View {
                     .onChange(of: pageNumber) { v in prefs.showPageNumber.set(v) }
                 Toggle(String(localized: "pref_keep_screen_on"), isOn: $keepOn)
                     .onChange(of: keepOn) { v in prefs.keepScreenOn.set(v) }
-                Toggle(String(localized: "crop_borders"), isOn: $crop)
+                Toggle(String(localized: "pref_custom_color_filter"), isOn: $crop)
                     .onChange(of: crop) { v in prefs.cropBorders.set(v) }
-                Toggle(String(localized: "skip_read"), isOn: $skipRead)
+                Toggle(String(localized: "pref_reader_navigation"), isOn: $skipRead)
                     .onChange(of: skipRead) { v in prefs.skipRead.set(v) }
             }
         }
@@ -108,11 +108,11 @@ struct DownloadSettingsScreen: View {
 
     var body: some View {
         Form {
-            Toggle(String(localized: "download_only_wifi"), isOn: $wifiOnly)
+            Toggle(String(localized: "pref_download_new"), isOn: $wifiOnly)
                 .onChange(of: wifiOnly) { v in prefs.downloadOnlyOverWifi.set(v) }
             Toggle(String(localized: "save_chapter_as_cbz"), isOn: $saveCBZ)
                 .onChange(of: saveCBZ) { v in prefs.saveChaptersAsCBZ.set(v) }
-            Toggle(String(localized: "download_new"), isOn: $downloadNew)
+            Toggle(String(localized: "pref_download_new"), isOn: $downloadNew)
                 .onChange(of: downloadNew) { v in prefs.downloadNewChapters.set(v) }
         }
         .navigationTitle(String(localized: "pref_category_downloads"))
@@ -133,9 +133,9 @@ struct BrowseSettingsScreen: View {
 
     var body: some View {
         Form {
-            Toggle(String(localized: "show_nsfw_source"), isOn: $showNSFW)
+            Toggle(String(localized: "pref_show_nsfw_source"), isOn: $showNSFW)
                 .onChange(of: showNSFW) { v in prefs.showNsfwSource.set(v) }
-            Toggle(String(localized: "browse_hide_in_library_items"), isOn: $hideInLibrary)
+            Toggle(String(localized: "pref_browse_summary"), isOn: $hideInLibrary)
                 .onChange(of: hideInLibrary) { v in prefs.hideInLibraryItems.set(v) }
             NavigationLink(String(localized: "label_extensions")) {
                 ExtensionsScreen()

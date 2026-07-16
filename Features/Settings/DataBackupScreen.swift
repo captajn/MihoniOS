@@ -25,14 +25,14 @@ struct DataBackupScreen: View {
                 Button {
                     Task { await createBackup() }
                 } label: {
-                    Label(String(localized: "backup_create"), systemImage: "arrow.up.doc")
+                    Label(String(localized: "backup_choice"), systemImage: "arrow.up.doc")
                 }
                 .disabled(isBusy)
 
                 Button {
                     showImporter = true
                 } label: {
-                    Label(String(localized: "backup_restore"), systemImage: "arrow.down.doc")
+                    Label(String(localized: "backup_restore_content_full"), systemImage: "arrow.down.doc")
                 }
                 .disabled(isBusy)
 

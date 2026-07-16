@@ -47,7 +47,7 @@ struct MoreScreen: View {
             }
 
             Section {
-                Toggle(String(localized: "incognito_mode"), isOn: $incognitoMode)
+                Toggle(String(localized: "pref_incognito_mode"), isOn: $incognitoMode)
                     .tint(.purple)
             }
 
@@ -129,7 +129,7 @@ struct AppearanceSettingsScreen: View {
     var body: some View {
         Form {
             Section(String(localized: "pref_app_theme")) {
-                Picker(String(localized: "pref_theme_mode"), selection: $themeModeRaw) {
+                Picker(String(localized: "pref_viewer_type"), selection: $themeModeRaw) {
                     ForEach(ThemeMode.allCases, id: \.rawValue) { mode in
                         Text(mode.displayName).tag(mode.rawValue)
                     }
@@ -150,15 +150,15 @@ struct AboutScreen: View {
     var body: some View {
         List {
             Section {
-                LabeledContent(String(localized: "Version"), value: "0.1.0-dev")
-                LabeledContent(String(localized: "Platform"), value: "iOS")
+                LabeledContent(String(localized: "version"), value: "0.1.0-dev")
+                LabeledContent(String(localized: "version"), value: "iOS")
             }
             Section {
-                Text(String(localized: "about_description"))
+                Text(String(localized: "about_dont_kill_my_app"))
                     .font(.footnote)
             }
-            Section(String(localized: "Disclaimer")) {
-                Text(String(localized: "about_disclaimer"))
+            Section(String(localized: "about_dont_kill_my_app")) {
+                Text(String(localized: "about_dont_kill_my_app"))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

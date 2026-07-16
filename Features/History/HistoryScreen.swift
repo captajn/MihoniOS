@@ -18,7 +18,7 @@ final class HistoryViewModel: ObservableObject {
 
     func load() async {
         guard let getHistory else {
-            errorMessage = String(localized: "error")
+            errorMessage = String(localized: "action_show_errors")
             return
         }
         isLoading = true
@@ -41,7 +41,7 @@ struct HistoryScreen: View {
             } else if model.items.isEmpty {
                 EmptyStateView(
                     title: String(localized: "history"),
-                    message: String(localized: "history_empty_description"),
+                    message: String(localized: "label_recent_manga"),
                     systemImage: "clock"
                 )
             } else {

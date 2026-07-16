@@ -101,7 +101,7 @@ final class LibraryViewModel: ObservableObject {
                 categories = try await getCategories.await()
             }
             guard let getLibrary else {
-                errorMessage = String(localized: "error")
+                errorMessage = String(localized: "action_show_errors")
                 return
             }
             items = try await getLibrary.await()
@@ -148,11 +148,11 @@ struct LibraryScreen: View {
             } else if model.filtered.isEmpty {
                 EmptyStateView(
                     title: model.searchText.isEmpty
-                        ? String(localized: "library_empty")
-                        : String(localized: "no_results"),
+                        ? String(localized: "information_empty_library")
+                        : String(localized: "no_results_found"),
                     message: model.searchText.isEmpty
-                        ? String(localized: "library_empty_description")
-                        : String(localized: "Try a different search."),
+                        ? String(localized: "information_empty_library")
+                        : String(localized: "no_results_found"),
                     systemImage: "books.vertical",
                     actionTitle: model.searchText.isEmpty ? String(localized: "label_sources") : nil,
                     action: model.searchText.isEmpty
