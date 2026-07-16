@@ -14,9 +14,19 @@ build/
 .build/
 Package.resolved
 
-# Tooling / local (không push tool lên GitHub)
-tool.py
-tool-ios.py
+# Build artifacts
+cm_artifacts/
+*.zip
+
+# Temporary scripts (local use only)
+check_*.py
+fix_*.py
+trim_*.py
+convert_*.py
+*.pyc
+__pycache__/
+
+# Tooling / local
 tool*.py
 .last_build
 .DS_Store
