@@ -15,7 +15,7 @@ struct OnboardingView: View {
                 storagePage.tag(2)
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
-            .navigationTitle(String(localized: "onboarding_description"))
+            .navigationTitle(String(localized: "onboarding_heading"))
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     if step < 2 {
@@ -50,7 +50,7 @@ struct OnboardingView: View {
     private var themePage: some View {
         Form {
             Section(String(localized: "pref_category_general")) {
-                Picker(String(localized: "pref_theme_mode"), selection: $themeModeRaw) {
+                Picker(String(localized: "pref_viewer_type"), selection: $themeModeRaw) {
                     ForEach(ThemeMode.allCases, id: \.rawValue) { mode in
                         Text(mode.displayName).tag(mode.rawValue)
                     }
@@ -70,9 +70,9 @@ struct OnboardingView: View {
             Image(systemName: "folder.badge.plus")
                 .font(.system(size: 56))
                 .foregroundStyle(.tint)
-            Text(String(localized: "onboarding_description"))
+            Text(String(localized: "onboarding_storage_info"))
                 .font(.title2.weight(.semibold))
-            Text(String(localized: "onboarding_description"))
+            Text(String(localized: "onboarding_storage_help_info"))
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal, 24)
