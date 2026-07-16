@@ -40,7 +40,30 @@ workflows:
     scripts:
       - name: Install xcodegen
         script: |
-          brew install xcodegen
+          set +e
+          brew install xcodegen > brew-install.log 2>&1
+          EXIT=$?
+          if [ $EXIT -ne 0 ]; then
+            echo "⚠️ brew install failed (exit $EXIT), retrying after brew update..."
+            cat brew-install.log
+            brew update >> brew-install.log 2>&1
+            brew install xcodegen >> brew-install.log 2>&1
+            EXIT=$?
+          fi
+          if [ $EXIT -ne 0 ]; then
+            echo "⚠️ brew still failing, falling back to direct binary download..."
+            cat brew-install.log
+            XG_VERSION="2.45.4"
+            curl -fL -o /tmp/xcodegen.zip "https://github.com/yonaskolb/XcodeGen/releases/download/${XG_VERSION}/xcodegen.zip"
+            unzip -q /tmp/xcodegen.zip -d /tmp/xcodegen
+            sudo cp -R /tmp/xcodegen/xcodegen.app/Contents/Resources/* /usr/local/bin/ 2>/dev/null || true
+            sudo ln -sf /tmp/xcodegen/xcodegen.app/Contents/MacOS/xcodegen /usr/local/bin/xcodegen
+            EXIT=$?
+          fi
+          cat brew-install.log
+          which xcodegen || { echo "❌ xcodegen not installed"; exit 1; }
+          xcodegen version
+          exit 0
       - name: Generate Xcode project
         script: |
           xcodegen generate
@@ -168,3 +191,4 @@ workflows:
       - build/Mihon.xcarchive
       - build-sim.log
       - build-archive.log
+      - brew-install.log
