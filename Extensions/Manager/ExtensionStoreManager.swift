@@ -69,13 +69,11 @@ public final class ExtensionStoreManager: @unchecked Sendable {
 
     public init() {
         loadStores()
-        // Add Keiyoushi store if no stores exist
-        if stores.isEmpty {
-            addStore(ExtensionStoreEntry(
-                indexUrl: "https://raw.githubusercontent.com/keiyoushi/extensions/repo/index.min.json",
-                name: "Keiyoushi Extensions"
-            ))
-        }
+        // NOTE: Keiyoushi's index lists real Android APK extensions, which cannot run on
+        // iOS (JSExtensionSource only executes the app's own JS package format). Do NOT
+        // add it as a default store — every entry from it would be a fake "Install" button
+        // that does nothing. Real content sources on iOS: LocalSource, Enhanced sources
+        // (Komga/Kavita/Suwayomi), and hand-authored JS packages added as custom stores.
     }
 
     // MARK: Stores
@@ -105,6 +103,12 @@ public final class ExtensionStoreManager: @unchecked Sendable {
         if let data = UserDefaults.standard.data(forKey: defaultsKey),
            let decoded = try? JSONDecoder().decode([ExtensionStoreEntry].self, from: data) {
             stores = decoded
+        }
+        // Migrate away from the previously auto-added Keiyoushi store (APK-only, unusable on iOS).
+        let before = stores.count
+        stores.removeAll { $0.indexUrl.contains("keiyoushi/extensions") }
+        if stores.count != before {
+            persistStores()
         }
     }
 
@@ -173,6 +177,47 @@ public final class ExtensionStoreManager: @unchecked Sendable {
         }
         try fm.copyItem(at: sourceDir, to: dest)
         return manifest
+    }
+
+    /// Download and install a remote extension entry. Only works for entries whose
+    /// `downloadURL` serves the app's own JS package format (a `{ "manifest": ExtensionManifest,
+    /// "script": "...js source..." }` JSON document) — NOT Android APKs (e.g. Keiyoushi), which
+    /// cannot run on iOS. Callers should hide/disable install for APK-style entries.
+    public func installRemote(_ info: RemoteExtensionInfo) async throws -> ExtensionManifest {
+        guard let urlString = info.downloadURL, let url = URL(string: urlString) else {
+            throw ExtensionError.storeError("Missing download URL for \(info.name)")
+        }
+        let (data, response) = try await URLSession.shared.data(from: url)
+        if let http = response as? HTTPURLResponse, !(200...299).contains(http.statusCode) {
+            throw ExtensionError.storeError("HTTP \(http.statusCode) downloading \(info.name)")
+        }
+
+        struct RemotePackage: Codable {
+            var manifest: ExtensionManifest
+            var script: String
+        }
+        guard let package = try? JSONDecoder().decode(RemotePackage.self, from: data) else {
+            throw ExtensionError.storeError(
+                "\(info.name) is not an iOS-compatible package (likely an Android APK extension)"
+            )
+        }
+
+        if let expected = package.manifest.sha256, !expected.isEmpty {
+            let actual = SHA256.hash(data: Data(package.script.utf8)).map { String(format: "%02x", $0) }.joined()
+            guard actual.caseInsensitiveCompare(expected) == .orderedSame else {
+                throw ExtensionError.storeError("SHA-256 mismatch for \(package.manifest.name) — install aborted")
+            }
+        }
+
+        let dest = extensionsRoot.appendingPathComponent(package.manifest.name.safeFileName, isDirectory: true)
+        let fm = FileManager.default
+        if fm.fileExists(atPath: dest.path) {
+            try fm.removeItem(at: dest)
+        }
+        try fm.createDirectory(at: dest, withIntermediateDirectories: true)
+        try JSONEncoder().encode(package.manifest).write(to: dest.appendingPathComponent("extension.json"))
+        try package.script.write(to: dest.appendingPathComponent(package.manifest.script), atomically: true, encoding: .utf8)
+        return package.manifest
     }
 
     /// Fetch remote index JSON — supports both formats:

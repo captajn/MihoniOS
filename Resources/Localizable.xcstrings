@@ -3317,13 +3317,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Copied to clipboard:\\n%1$s"
+            "value": "Copied to clipboard:\n%1$s"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Đã sao chép vào bảng tạm:\n\\n%1$s"
+            "value": "Đã sao chép vào bảng tạm:\n\n%1$s"
           }
         }
       }
@@ -5272,13 +5272,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "F-Droid builds are not officially supported.\\nTap to learn more."
+            "value": "F-Droid builds are not officially supported.\nTap to learn more."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bản dựng F-Droid không được hỗ trợ chính thức.\n\\nNhấn để tìm hiểu thêm."
+            "value": "Bản dựng F-Droid không được hỗ trợ chính thức.\n\nNhấn để tìm hiểu thêm."
           }
         }
       }
@@ -6962,6 +6962,91 @@
           "stringUnit": {
             "state": "translated",
             "value": "Định dạng chương hợp lệ"
+          }
+        }
+      }
+    },
+    "empty_local_source_message": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add manga folders or CBZ/ZIP files to the local source folder to see them here."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm thư mục truyện hoặc file CBZ/ZIP vào thư mục nguồn cục bộ để hiển thị ở đây."
+          }
+        }
+      }
+    },
+    "how_to_add_sources_title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How to add manga sources"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cách thêm nguồn truyện"
+          }
+        }
+      }
+    },
+    "how_to_add_sources_local": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local source: put manga folders or CBZ/ZIP files into the app's local folder (Browse → Local source) to read offline."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nguồn cục bộ: đặt thư mục truyện hoặc file CBZ/ZIP vào thư mục local của app (Browse → Local source) để đọc offline."
+          }
+        }
+      }
+    },
+    "how_to_add_sources_enhanced": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Self-hosted servers: connect a Komga, Kavita, or Suwayomi server under Settings → Tracking for your own library."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server tự host: kết nối Komga, Kavita hoặc Suwayomi trong Cài đặt → Theo dõi để dùng thư viện của riêng bạn."
+          }
+        }
+      }
+    },
+    "how_to_add_sources_apk_warning": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Android APK extensions (e.g. Keiyoushi) cannot run on iOS. Only extension stores serving this app's own JS package format can be installed here."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extension APK của Android (vd: Keiyoushi) không chạy được trên iOS. Chỉ cửa hàng nào phục vụ đúng định dạng gói JS riêng của app này mới cài được ở đây."
           }
         }
       }
@@ -9165,13 +9250,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Select a folder where %1$s will store chapter downloads, backups, and more.\\n\\nA dedicated folder is recommended.\\n\\nSelected folder: %2$s"
+            "value": "Select a folder where Mihon will store chapter downloads, backups, and more.\n\nA dedicated folder is recommended."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Chọn thư mục nơi mà %1$s sẽ chứa chương truyện tải xuống, sao lưu, và những thứ khác.\n\\n\n\\nKhuyến khích sử dụng một thư mục chuyên dụng.\n\\n\n\\nThư mục được chọn: %2$s"
+            "value": "Chọn thư mục nơi Mihon sẽ chứa chương truyện tải xuống, sao lưu, và những thứ khác.\n\nKhuyến khích sử dụng một thư mục chuyên dụng."
           }
         }
       }
@@ -9420,13 +9505,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You have entries in your library with a similar name.\\n\\nSelect an entry to migrate or add anyway."
+            "value": "You have entries in your library with a similar name.\n\nSelect an entry to migrate or add anyway."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bạn có các mục trong thư viện của bạn với một tên tương tự.\\n\\nChọn một mục để di chuyển hoặc luôn thêm vào."
+            "value": "Bạn có các mục trong thư viện của bạn với một tên tương tự.\n\nChọn một mục để di chuyển hoặc luôn thêm vào."
           }
         }
       }
@@ -10967,13 +11052,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "If reader loads a blank image incrementally reduce the threshold.\\nSelected: %s"
+            "value": "If reader loads a blank image incrementally reduce the threshold.\nSelected: %s"
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Nếu người đọc tải một hình ảnh trống thì hãy giảm dần ngưỡng\\nĐã chọn: %s"
+            "value": "Nếu người đọc tải một hình ảnh trống thì hãy giảm dần ngưỡng\nĐã chọn: %s"
           }
         }
       }
@@ -14831,13 +14916,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Malicious extensions can read any stored login credentials or execute arbitrary code.\\n\\nBy trusting this extension, you accept these risks."
+            "value": "Malicious extensions can read any stored login credentials or execute arbitrary code.\n\nBy trusting this extension, you accept these risks."
           }
         },
         "vi": {
           "stringUnit": {
             "state": "translated",
-            "value": "Các tiện ích mở rộng độc hại có thể đọc mọi thông tin đăng nhập được lưu trữ hoặc thực thi mã tùy ý.\n\\n\n\\nBạn sẽ chấp nhận những rủi ro khi tin tưởng tiện ích mở rộng này."
+            "value": "Các tiện ích mở rộng độc hại có thể đọc mọi thông tin đăng nhập được lưu trữ hoặc thực thi mã tùy ý.\n\nBạn sẽ chấp nhận những rủi ro khi tin tưởng tiện ích mở rộng này."
           }
         }
       }

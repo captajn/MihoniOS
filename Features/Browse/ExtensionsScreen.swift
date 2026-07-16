@@ -11,6 +11,7 @@ struct ExtensionsScreen: View {
     @State private var message: String?
     @State private var storeURL = ""
     @State private var storeName = ""
+    @State private var installingId: Int64?
 
     var body: some View {
         List {
@@ -71,11 +72,22 @@ struct ExtensionsScreen: View {
             if !remote.isEmpty {
                 Section(String(localized: "label_extensions")) {
                     ForEach(remote) { item in
-                        VStack(alignment: .leading) {
-                            Text(item.name)
-                            Text("\(item.lang) · \(item.version)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(item.name)
+                                Text("\(item.lang) · \(item.version)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            if installingId == item.id {
+                                ProgressView()
+                            } else {
+                                Button(String(localized: "action_install")) {
+                                    Task { await install(item) }
+                                }
+                                .buttonStyle(.borderless)
+                            }
                         }
                     }
                 }
@@ -93,26 +105,27 @@ struct ExtensionsScreen: View {
                     .foregroundStyle(.secondary)
             }
 
-            Section("How to add sources") {
+            Section(String(localized: "how_to_add_sources_title")) {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("1. Go to Browse → Extensions")
+                    Text(String(localized: "how_to_add_sources_local"))
                         .font(.footnote)
-                    Text("2. Tap 'Refresh remote index' to load available extensions")
+                    Text(String(localized: "how_to_add_sources_enhanced"))
                         .font(.footnote)
-                    Text("3. Extensions from Keiyoushi store are listed below")
-                        .font(.footnote)
-                    Text("4. Note: APK extensions from Android are NOT supported on iOS")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    Text("5. Use Local source (Documents/local) for offline CBZ/ZIP files")
+                    Text(String(localized: "how_to_add_sources_apk_warning"))
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             }
         }
         .navigationTitle(String(localized: "label_extensions"))
-        .onAppear { reload() }
-        .refreshable { reload() }
+        .onAppear {
+            reload()
+            Task { await fetchRemote() }
+        }
+        .refreshable {
+            reload()
+            await fetchRemote()
+        }
     }
 
     private func reload() {
@@ -128,6 +141,18 @@ struct ExtensionsScreen: View {
             try ExtensionStoreManager.shared.installDemoExtension()
             reload()
             message = String(localized: "action_install")
+        } catch {
+            message = error.localizedDescription
+        }
+    }
+
+    private func install(_ item: RemoteExtensionInfo) async {
+        installingId = item.id
+        defer { installingId = nil }
+        do {
+            let manifest = try await ExtensionStoreManager.shared.installRemote(item)
+            reload()
+            message = "Installed \(manifest.name)"
         } catch {
             message = error.localizedDescription
         }

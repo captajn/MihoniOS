@@ -143,8 +143,8 @@ struct SourceBrowseScreen: View {
                 EmptyStateView(
                     title: String(localized: "empty_screen"),
                     message: sourceId == LocalSource.idValue
-                        ? String(localized: "empty_screen")
-                        : String(localized: "empty_screen"),
+                        ? String(localized: "empty_local_source_message")
+                        : String(localized: "no_results_found"),
                     systemImage: "tray"
                 )
             } else {
