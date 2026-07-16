@@ -66,6 +66,11 @@ struct BrowseScreen: View {
                 } label: {
                     Label(String(localized: "label_migration"), systemImage: "arrow.triangle.2.circlepath")
                 }
+                NavigationLink {
+                    SuwayomiConnectScreen()
+                } label: {
+                    Label("Suwayomi Server", systemImage: "server.rack")
+                }
             }
 
             Section(String(localized: "label_sources")) {

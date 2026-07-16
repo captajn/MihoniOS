@@ -40,6 +40,9 @@ struct MihonApp: App {
 
         let sourceManager = DefaultSourceManager(localRoot: localRoot)
         ExtensionStoreManager.shared.loadAll(into: sourceManager)
+        for connection in SuwayomiManager.shared.getConnections() {
+            sourceManager.register(connection.makeSource())
+        }
         AppContainer.shared.register(sourceManager as SourceManager)
         AppContainer.shared.register(sourceManager)
 
