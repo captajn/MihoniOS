@@ -259,7 +259,7 @@ struct LibrarySortFilterSheet: View {
                                 Spacer()
                                 if model.displayMode == mode {
                                     Image(systemName: "checkmark")
-                                        .foregroundStyle(.accentColor)
+                                        .foregroundColor(.accent)
                                 }
                             }
                         }
@@ -276,21 +276,23 @@ struct LibrarySortFilterSheet: View {
                             Spacer()
                             if model.selectedCategoryId == -1 {
                                 Image(systemName: "checkmark")
-                                    .foregroundStyle(.accentColor)
+                                    .foregroundColor(.accent)
                             }
                         }
                     }
-                    ForEach(model.categories.filter { !$0.isSystemCategory }) { cat in
-                        Button {
-                            model.selectedCategoryId = cat.id
-                        } label: {
-                            HStack {
-                                Text(cat.name)
-                                    .foregroundStyle(.primary)
-                                Spacer()
-                                if model.selectedCategoryId == cat.id {
-                                    Image(systemName: "checkmark")
-                                    .foregroundStyle(.accentColor)
+                    ForEach(model.categories, id: \.id) { cat in
+                        if !cat.isSystemCategory {
+                            Button {
+                                model.selectedCategoryId = cat.id
+                            } label: {
+                                HStack {
+                                    Text(cat.name)
+                                        .foregroundStyle(.primary)
+                                    Spacer()
+                                    if model.selectedCategoryId == cat.id {
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(.accent)
+                                    }
                                 }
                             }
                         }
@@ -324,7 +326,7 @@ struct LibrarySortFilterSheet: View {
                 Spacer()
                 if model.sortMode == mode {
                     Image(systemName: model.sortAscending ? "arrow.up" : "arrow.down")
-                        .foregroundStyle(.accentColor)
+                        .foregroundColor(.accent)
                 }
             }
         }
