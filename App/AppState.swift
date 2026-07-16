@@ -28,11 +28,11 @@ enum AppTab: String, CaseIterable, Identifiable, Hashable {
 
     var title: String {
         switch self {
-        case .library: "Library"
-        case .updates: "Updates"
-        case .history: "History"
-        case .browse: "Browse"
-        case .more: "More"
+        case .library: String(localized: "label_library")
+        case .updates: String(localized: "label_recent_updates")
+        case .history: String(localized: "label_recent_manga")
+        case .browse: String(localized: "label_sources")
+        case .more: String(localized: "label_more")
         }
     }
 

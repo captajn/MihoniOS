@@ -41,30 +41,25 @@ workflows:
       - name: Install xcodegen
         script: |
           set +e
-          # Stale/corrupted Cellar entry from a reused CI machine can block install
-          # ("Error: /opt/homebrew/Cellar/xcodegen/X.Y.Z is not a directory").
-          sudo rm -rf /opt/homebrew/Cellar/xcodegen 2>/dev/null || true
-          brew install xcodegen > brew-install.log 2>&1
-          EXIT=$?
-          if [ $EXIT -ne 0 ]; then
-            echo "⚠️ brew install failed (exit $EXIT), retrying after brew update..."
-            cat brew-install.log
-            sudo rm -rf /opt/homebrew/Cellar/xcodegen 2>/dev/null || true
-            brew update >> brew-install.log 2>&1
-            brew install xcodegen >> brew-install.log 2>&1
-            EXIT=$?
+          # brew has been unreliable on this build machine (reused CI instance leaves a
+          # corrupted /opt/homebrew/Cellar/xcodegen entry that `rm` alone can't clear —
+          # "Error: ... is not a directory" on every pour, even after removing it first).
+          # Skip brew entirely: download the prebuilt XcodeGen.app bundle from GitHub
+          # Releases and symlink its CLI binary — no Cellar involved, fully self-contained.
+          XG_VERSION="2.46.0"
+          curl -fL -o /tmp/xcodegen.zip \
+            "https://github.com/yonaskolb/XcodeGen/releases/download/${XG_VERSION}/xcodegen.zip" \
+            > xcodegen-install.log 2>&1
+          unzip -oq /tmp/xcodegen.zip -d /tmp/xcodegen-extracted >> xcodegen-install.log 2>&1
+          sudo mkdir -p /usr/local/bin
+          sudo ln -sf /tmp/xcodegen-extracted/xcodegen.app/Contents/MacOS/xcodegen /usr/local/bin/xcodegen
+          export PATH="/usr/local/bin:$PATH"
+          if ! which xcodegen > /dev/null 2>&1 || ! xcodegen version > /dev/null 2>&1; then
+            echo "⚠️ Direct binary install failed, falling back to brew..." | tee -a xcodegen-install.log
+            sudo rm -rf /opt/homebrew/Cellar/xcodegen 2>&1 | tee -a xcodegen-install.log
+            brew install xcodegen >> xcodegen-install.log 2>&1
           fi
-          if [ $EXIT -ne 0 ]; then
-            echo "⚠️ brew still failing, falling back to direct binary download..."
-            cat brew-install.log
-            XG_VERSION="2.45.4"
-            curl -fL -o /tmp/xcodegen.zip "https://github.com/yonaskolb/XcodeGen/releases/download/${XG_VERSION}/xcodegen.zip"
-            unzip -q /tmp/xcodegen.zip -d /tmp/xcodegen
-            sudo cp -R /tmp/xcodegen/xcodegen.app/Contents/Resources/* /usr/local/bin/ 2>/dev/null || true
-            sudo ln -sf /tmp/xcodegen/xcodegen.app/Contents/MacOS/xcodegen /usr/local/bin/xcodegen
-            EXIT=$?
-          fi
-          cat brew-install.log
+          cat xcodegen-install.log
           which xcodegen || { echo "❌ xcodegen not installed"; exit 1; }
           xcodegen version
           exit 0
@@ -195,4 +190,4 @@ workflows:
       - build/Mihon.xcarchive
       - build-sim.log
       - build-archive.log
-      - brew-install.log
+      - xcodegen-install.log
