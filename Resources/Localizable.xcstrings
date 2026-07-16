@@ -7051,6 +7051,74 @@
         }
       }
     },
+    "no_extensions_installed": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No extensions installed"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chưa cài extension nào"
+          }
+        }
+      }
+    },
+    "extension_store_name_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store name (optional)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tên cửa hàng (tùy chọn)"
+          }
+        }
+      }
+    },
+    "extension_store_url_placeholder": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store index URL (.json)"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "URL index cửa hàng (.json)"
+          }
+        }
+      }
+    },
+    "action_add_extension_store": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add store"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thêm cửa hàng"
+          }
+        }
+      }
+    },
     "local_source": {
       "extractionState": "manual",
       "localizations": {

@@ -17,7 +17,7 @@ struct ExtensionsScreen: View {
         List {
             Section(String(localized: "label_extensions")) {
                 if installed.isEmpty {
-                    Text(String(localized: "label_extensions"))
+                    Text(String(localized: "no_extensions_installed"))
                         .foregroundStyle(.secondary)
                 } else {
                     ForEach(installed) { ext in
@@ -55,11 +55,12 @@ struct ExtensionsScreen: View {
                         }
                     }
                 }
-                TextField(String(localized: "extensionStores"), text: $storeName)
-                TextField(String(localized: "extensionStores"), text: $storeURL)
+                TextField(String(localized: "extension_store_name_placeholder"), text: $storeName)
+                TextField(String(localized: "extension_store_url_placeholder"), text: $storeURL)
                     .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
                     .keyboardType(.URL)
-                Button(String(localized: "extensionStores")) {
+                Button(String(localized: "action_add_extension_store")) {
                     guard !storeURL.isEmpty else { return }
                     ExtensionStoreManager.shared.addStore(
                         ExtensionStoreEntry(indexUrl: storeURL, name: storeName.isEmpty ? storeURL : storeName)
@@ -68,6 +69,7 @@ struct ExtensionsScreen: View {
                     storeName = ""
                     reload()
                 }
+                .disabled(storeURL.isEmpty)
                 Button(String(localized: "action_retry")) {
                     Task { await fetchRemote() }
                 }
@@ -101,12 +103,6 @@ struct ExtensionsScreen: View {
                 Section {
                     Text(message).font(.footnote).foregroundStyle(.secondary)
                 }
-            }
-
-            Section {
-                Text(String(localized: "label_extensions"))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
             }
 
             Section(String(localized: "how_to_add_sources_title")) {
